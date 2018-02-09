@@ -15,7 +15,6 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.enums.DaysOfWeek;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
@@ -23,7 +22,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.enums.DaysOfWeek.*;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.FRIDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.MONDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.SATURDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.SUNDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.THURSDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.TUESDAY;
+import static com.gustavohidalgo.quaiscalingudum.models.Notification.WEDNESDAY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -128,55 +133,61 @@ public class EtaFragment extends Fragment {
     @OnClick({R.id.sun_cb, R.id.mon_cb, R.id.tue_cb, R.id.wed_cb, R.id.thu_cb, R.id.fri_cb,
             R.id.sat_cb})
     public void onDayChecked(CheckBox dayCheckBox) {
-        switch(dayCheckBox.getId()){
-            case R.id.sun_cb:
-                mNotification.setDaysOfWeek(0b1000000);
-                break;
-            case R.id.mon_cb:
-                mNotification.setDaysOfWeek(0b0100000);
-                break;
-            case R.id.tue_cb:
-                mNotification.setDaysOfWeek(0b0010000);
-                break;
-            case R.id.wed_cb:
-                mNotification.setDaysOfWeek(0b0001000);
-                break;
-            case R.id.thu_cb:
-                mNotification.setDaysOfWeek(0b0000100);
-                break;
-            case R.id.fri_cb:
-                mNotification.setDaysOfWeek(0b0000010);
-                break;
-            case R.id.sat_cb:
-                mNotification.setDaysOfWeek(0b0000001);
-                break;
+        if(dayCheckBox.isChecked()) {
+            switch (dayCheckBox.getId()) {
+                case R.id.sun_cb:
+                    mNotification.setDayOfWeek(SUNDAY);
+                    break;
+                case R.id.mon_cb:
+                    mNotification.setDayOfWeek(MONDAY);
+                    break;
+                case R.id.tue_cb:
+                    mNotification.setDayOfWeek(TUESDAY);
+                    break;
+                case R.id.wed_cb:
+                    mNotification.setDayOfWeek(WEDNESDAY);
+                    break;
+                case R.id.thu_cb:
+                    mNotification.setDayOfWeek(THURSDAY);
+                    break;
+                case R.id.fri_cb:
+                    mNotification.setDayOfWeek(FRIDAY);
+                    break;
+                case R.id.sat_cb:
+                    mNotification.setDayOfWeek(SATURDAY);
+                    break;
+            }
+        } else {
+            switch (dayCheckBox.getId()) {
+                case R.id.sun_cb:
+                    mNotification.resetDayOfWeek(SUNDAY);
+                    break;
+                case R.id.mon_cb:
+                    mNotification.resetDayOfWeek(MONDAY);
+                    break;
+                case R.id.tue_cb:
+                    mNotification.resetDayOfWeek(TUESDAY);
+                    break;
+                case R.id.wed_cb:
+                    mNotification.resetDayOfWeek(WEDNESDAY);
+                    break;
+                case R.id.thu_cb:
+                    mNotification.resetDayOfWeek(THURSDAY);
+                    break;
+                case R.id.fri_cb:
+                    mNotification.resetDayOfWeek(FRIDAY);
+                    break;
+                case R.id.sat_cb:
+                    mNotification.resetDayOfWeek(SATURDAY);
+                    break;
+            }
         }
-//        if(dayCheckBox.isChecked()){
-//
-//            Toast.makeText(getContext(), "check", Toast.LENGTH_SHORT).show();
-//        } else {
-//            switch(dayCheckBox.getId()){
-//                case R.id.sun_cb:
-//                    break;
-//                case R.id.mon_cb:
-//                    break;
-//                case R.id.tue_cb:
-//                    break;
-//                case R.id.wed_cb:
-//                    break;
-//                case R.id.thu_cb:
-//                    break;
-//                case R.id.fri_cb:
-//                    break;
-//                case R.id.sat_cb:
-//                    break;
-//            }
-//            Toast.makeText(getContext(), "uncheck", Toast.LENGTH_SHORT).show();
-//        }
     }
 
     @OnClick(R.id.next_pickline_bt)
     public void onNextPressed() {
+        mNotification.setHour(mTimePicker.getCurrentHour());
+        mNotification.setMinute(mTimePicker.getCurrentMinute());
         if (mListener != null) {
             mListener.toPickLine(mNotification);
         }

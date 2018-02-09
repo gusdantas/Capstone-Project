@@ -11,6 +11,8 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import butterknife.OnClick;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -65,12 +67,14 @@ public class SetNotificationsFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onNextPressed(View view) {
+    @OnClick(R.id.next_finish_bt)
+    public void onNextPressed() {
         getActivity().finish();
 
     }
 
-    public void onBackPressed(View view) {
+    @OnClick(R.id.back_details_bt)
+    public void onBackPressed() {
         if (mListener != null) {
             mListener.toDetails(mNotification);
         }

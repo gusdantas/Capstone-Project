@@ -193,7 +193,7 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <Button
-        android:id="@+id/back_details_bt"
+        android:id="@+id/back_pickline_bt"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Pick a line"

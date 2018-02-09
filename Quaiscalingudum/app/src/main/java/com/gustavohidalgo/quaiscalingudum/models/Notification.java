@@ -8,7 +8,14 @@ import android.os.Parcelable;
  */
 
 public class Notification implements Parcelable {
-    private int mDaysOfWeek;
+    public static final byte SUNDAY    = 0b1000000;
+    public static final byte MONDAY    = 0b0100000;
+    public static final byte TUESDAY   = 0b0010000;
+    public static final byte WEDNESDAY = 0b0001000;
+    public static final byte THURSDAY  = 0b0000100;
+    public static final byte FRIDAY    = 0b0000010;
+    public static final byte SATURDAY  = 0b0000001;
+    private int mDaysOfWeek, mHour, mMinute;
 
     public Notification() {
     }
@@ -40,11 +47,30 @@ public class Notification implements Parcelable {
     }
 
     //TODO: setDaysOfWeek
-    public void setDaysOfWeek(int daysOfWeek) {
-        this.mDaysOfWeek = mDaysOfWeek & daysOfWeek;
+    public void setDayOfWeek(int dayOfWeek) {
+        this.mDaysOfWeek |= dayOfWeek;
+    }
+
+    public void resetDayOfWeek(int dayOfWeek) {
+        this.mDaysOfWeek &= ~dayOfWeek;
     }
 
     public int getDaysOfWeek() {
         return mDaysOfWeek;
+    }
+
+    public void setHour(int hour) {
+        this.mHour = hour;
+    }
+
+    public int getHour() {
+        return mHour;
+    }
+
+    public void setMinute(int minute) {
+        this.mMinute = minute;
+    }
+    public int getMinute() {
+        return mMinute;
     }
 }
