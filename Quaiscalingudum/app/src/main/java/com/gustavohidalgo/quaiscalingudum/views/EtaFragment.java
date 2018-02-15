@@ -39,11 +39,8 @@ import static com.gustavohidalgo.quaiscalingudum.models.Notification.WEDNESDAY;
  * create an instance of this fragment.
  */
 public class EtaFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String NOTIFICATION = "notification";
 
-    // TODO: Rename and change types of parameters
     private Notification mNotification;
     @BindView(R.id.time_tv)
     TextView mTimeTV;
@@ -83,7 +80,6 @@ public class EtaFragment extends Fragment {
      * @param notification Parameter 1.
      * @return A new instance of fragment EtaFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static EtaFragment newInstance(Notification notification) {
         EtaFragment fragment = new EtaFragment();
         Bundle args = new Bundle();

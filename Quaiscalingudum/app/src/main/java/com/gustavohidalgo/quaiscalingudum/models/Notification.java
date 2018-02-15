@@ -46,7 +46,6 @@ public class Notification implements Parcelable {
         dest.writeInt(mDaysOfWeek);
     }
 
-    //TODO: setDaysOfWeek
     public void setDayOfWeek(int dayOfWeek) {
         this.mDaysOfWeek |= dayOfWeek;
     }
@@ -70,7 +69,31 @@ public class Notification implements Parcelable {
     public void setMinute(int minute) {
         this.mMinute = minute;
     }
+
     public int getMinute() {
         return mMinute;
+    }
+
+    public String getServiceId(){
+        StringBuilder serviceId = new StringBuilder();
+        if ((mDaysOfWeek &= 0b0111110) > 0){
+            serviceId.append("U");
+        } else {
+            serviceId.append("_");
+        }
+
+        if ((mDaysOfWeek &= 0b0000001) > 0){
+            serviceId.append("S");
+        } else {
+            serviceId.append("_");
+        }
+
+        if ((mDaysOfWeek &= 0b1000000) > 0) {
+            serviceId.append("D");
+        } else {
+            serviceId.append("_");
+        }
+
+        return serviceId.toString();
     }
 }

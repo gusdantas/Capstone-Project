@@ -3,14 +3,22 @@ package com.gustavohidalgo.quaiscalingudum.views;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -21,13 +29,17 @@ import butterknife.OnClick;
  * Use the {@link PickLineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PickLineFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class PickLineFragment extends Fragment implements SearchView.OnQueryTextListener {
     private static final String NOTIFICATION = "notification";
+    private static final String LINES = "lines";
 
-    // TODO: Rename and change types of parameters
+    @BindView(R.id.searchView)
+    SearchView mSearchView;
+    @BindView(R.id.lines_rv)
+    RecyclerView mLinesRV;
+
     private Notification mNotification;
+    private ArrayList<String> mLines;
 
     private OnEditNotificationListener mListener;
 
@@ -42,11 +54,11 @@ public class PickLineFragment extends Fragment {
      * @param notification Parameter 1.
      * @return A new instance of fragment PickLineFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PickLineFragment newInstance(Notification notification) {
+    public static PickLineFragment newInstance(Notification notification, ArrayList<String> lines) {
         PickLineFragment fragment = new PickLineFragment();
         Bundle args = new Bundle();
         args.putParcelable(NOTIFICATION, notification);
+        args.putStringArrayList(LINES, lines);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,17 +68,26 @@ public class PickLineFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
+            mLines = getArguments().getStringArrayList(LINES);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_pick_line, container, false);
+        View view = inflater.inflate(R.layout.fragment_pick_line, container, false);
+        ButterKnife.bind(this, view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mLinesRV.setLayoutManager(layoutManager);
+        SearchLineAdapter searchLineAdapter = new SearchLineAdapter();
+        searchLineAdapter.setLines(mLines);
+        mLinesRV.setAdapter(searchLineAdapter);
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     @OnClick(R.id.next_detail_bt)
     public void onNextPressed() {
         if (mListener != null) {
@@ -96,5 +117,15 @@ public class PickLineFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 }

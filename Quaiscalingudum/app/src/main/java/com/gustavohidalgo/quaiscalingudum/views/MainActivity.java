@@ -24,8 +24,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.utils.FileHelper;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
+    public static ArrayList<String> sLines;
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -74,6 +82,10 @@ public class MainActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
 
         initializeFirebase();
+
+        if (sLines == null){
+            sLines = FileHelper.getLines(R.raw.trips, this);
+        }
     }
 
     @Override
@@ -202,6 +214,7 @@ public class MainActivity extends AppCompatActivity
 
     private void addNotification(){
         Intent intent = new Intent(this, AddNotificationActivity.class);
+        intent.putExtra("lines", sLines);
         startActivity(intent);
     }
 }
