@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
 
 import java.util.ArrayList;
 
@@ -19,7 +20,10 @@ import butterknife.ButterKnife;
  */
 
 public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.LineViewHolder>  {
-    ArrayList<String> mLines;
+    private ArrayList<String> mLines;
+    private static String[] mLineChosen;
+
+    private static OnChooseLineListener mChooseLineListener;
 
     public SearchLineAdapter(){
 
@@ -35,9 +39,9 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
 
     @Override
     public void onBindViewHolder(LineViewHolder holder, int position) {
-        String[] line = mLines.get(position).split(",");
-        holder.mLineCodeTV.setText(line[0]);
-        holder.mLineNameTV.setText(line[3]);
+        mLineChosen = mLines.get(position).split(",");
+        holder.mLineCodeTV.setText(mLineChosen[0]);
+        holder.mLineNameTV.setText(mLineChosen[3]);
     }
 
     @Override
@@ -51,6 +55,10 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
     public void setLines(ArrayList<String> lines){
         this.mLines = lines;
         notifyDataSetChanged();
+    }
+
+    public void setChooseLineListener(OnChooseLineListener chooseLineListener){
+        mChooseLineListener = chooseLineListener;
     }
 
     public static class LineViewHolder extends RecyclerView.ViewHolder
@@ -69,7 +77,7 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
 
         @Override
         public void onClick(View v) {
-
+            mChooseLineListener.lineChosen(mLineChosen);
         }
     }
 }

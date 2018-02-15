@@ -24,12 +24,10 @@ import butterknife.OnClick;
  * create an instance of this fragment.
  */
 public class DetailsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String NOTIFICATION = "notification";
 
-    // TODO: Rename and change types of parameters
     private Notification mNotification;
+    private String[] mLine;
 
     private OnEditNotificationListener mListener;
 
@@ -44,7 +42,6 @@ public class DetailsFragment extends Fragment {
      * @param notification Parameter 1.
      * @return A new instance of fragment DetailsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static DetailsFragment newInstance(Notification notification) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
@@ -58,6 +55,7 @@ public class DetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
+            mLine = mNotification.getLine();
         }
     }
 

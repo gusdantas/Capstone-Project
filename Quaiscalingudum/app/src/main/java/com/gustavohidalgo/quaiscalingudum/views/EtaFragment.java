@@ -18,6 +18,9 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -182,6 +185,10 @@ public class EtaFragment extends Fragment {
 
     @OnClick(R.id.next_pickline_bt)
     public void onNextPressed() {
+        if(mNotification.getDaysOfWeek() == 0){
+            DateTime dateTime = new DateTime();
+
+        }
         mNotification.setHour(mTimePicker.getCurrentHour());
         mNotification.setMinute(mTimePicker.getCurrentMinute());
         if (mListener != null) {

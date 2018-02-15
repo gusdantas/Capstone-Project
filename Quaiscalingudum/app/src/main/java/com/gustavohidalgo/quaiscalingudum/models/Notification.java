@@ -16,6 +16,7 @@ public class Notification implements Parcelable {
     public static final byte FRIDAY    = 0b0000010;
     public static final byte SATURDAY  = 0b0000001;
     private int mDaysOfWeek, mHour, mMinute;
+    private String[] mLine;
 
     public Notification() {
     }
@@ -95,5 +96,13 @@ public class Notification implements Parcelable {
         }
 
         return serviceId.toString();
+    }
+
+    public void setLine(String[] line){
+        this.mLine = line;
+    }
+
+    public String[] getLine(){
+        return mLine;
     }
 }

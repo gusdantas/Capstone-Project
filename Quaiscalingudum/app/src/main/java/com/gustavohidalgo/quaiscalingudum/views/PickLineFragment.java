@@ -9,9 +9,11 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
@@ -29,14 +31,18 @@ import butterknife.OnClick;
  * Use the {@link PickLineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PickLineFragment extends Fragment implements SearchView.OnQueryTextListener {
+public class PickLineFragment extends Fragment implements SearchView.OnQueryTextListener,
+        OnChooseLineListener {
     private static final String NOTIFICATION = "notification";
     private static final String LINES = "lines";
 
-    @BindView(R.id.searchView)
     SearchView mSearchView;
     @BindView(R.id.lines_rv)
     RecyclerView mLinesRV;
+    @BindView(R.id.line_code_selected_tv)
+    TextView mLineCodeSelectedTV;
+    @BindView(R.id.line_name_selected_tv)
+    TextView mLineNameSelectedTV;
 
     private Notification mNotification;
     private ArrayList<String> mLines;
@@ -80,9 +86,11 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_pick_line, container, false);
         ButterKnife.bind(this, view);
+        mSearchView = view.findViewById(R.id.searchView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mLinesRV.setLayoutManager(layoutManager);
         SearchLineAdapter searchLineAdapter = new SearchLineAdapter();
+        searchLineAdapter.setChooseLineListener(this);
         searchLineAdapter.setLines(mLines);
         mLinesRV.setAdapter(searchLineAdapter);
         return view;
@@ -90,7 +98,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     @OnClick(R.id.next_detail_bt)
     public void onNextPressed() {
-        if (mListener != null) {
+        if (mListener != null && mNotification.getLine() != null) {
             mListener.toDetails(mNotification);
         }
     }
@@ -127,5 +135,12 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    @Override
+    public void lineChosen(String[] line) {
+        mLineCodeSelectedTV.setText(line[0]);
+        mLineNameSelectedTV.setText(line[3]);
+        mNotification.setLine(line);
     }
 }
