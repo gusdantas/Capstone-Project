@@ -3,6 +3,12 @@ package com.gustavohidalgo.quaiscalingudum.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+
+import java.util.ArrayList;
+import java.util.Date;
+
 /**
  * Created by gustavo.hidalgo on 18/02/06.
  */
@@ -15,8 +21,10 @@ public class Notification implements Parcelable {
     public static final byte THURSDAY  = 0b0000100;
     public static final byte FRIDAY    = 0b0000010;
     public static final byte SATURDAY  = 0b0000001;
-    private int mDaysOfWeek, mHour, mMinute;
+    private int mDaysOfWeek;
+    private DateTime mDateTime;
     private String[] mLine;
+    private boolean mIsWeekly;
 
     public Notification() {
     }
@@ -59,43 +67,55 @@ public class Notification implements Parcelable {
         return mDaysOfWeek;
     }
 
-    public void setHour(int hour) {
-        this.mHour = hour;
-    }
+    public ArrayList<String> getServiceIds(){
+        ArrayList<String> serviceId = new ArrayList<>();
+        serviceId.add("USD");
 
-    public int getHour() {
-        return mHour;
-    }
+        if(mIsWeekly) {
+            if ((mDaysOfWeek &= 0b0111110) > 0) {
+                serviceId.add("U__");
+                serviceId.add("U_D");
+                serviceId.add("US_");
+            }
 
-    public void setMinute(int minute) {
-        this.mMinute = minute;
-    }
+            if ((mDaysOfWeek &= 0b0000001) > 0) {
+                serviceId.add("_S_");
+                serviceId.add("_SD");
+                if(!serviceId.contains("US_")) {
+                    serviceId.add("US_");
+                }
+            }
 
-    public int getMinute() {
-        return mMinute;
-    }
-
-    public String getServiceId(){
-        StringBuilder serviceId = new StringBuilder();
-        if ((mDaysOfWeek &= 0b0111110) > 0){
-            serviceId.append("U");
+            if ((mDaysOfWeek &= 0b1000000) > 0) {
+                serviceId.add("__D");
+                if(!serviceId.contains("_SD")) {
+                    serviceId.add("_SD");
+                }
+                if(!serviceId.contains("U_D")) {
+                    serviceId.add("U_D");
+                }
+            }
         } else {
-            serviceId.append("_");
+            if (mDateTime.getDayOfWeek() == DateTimeConstants.MONDAY
+                    || mDateTime.getDayOfWeek() == DateTimeConstants.TUESDAY
+                    || mDateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
+                    || mDateTime.getDayOfWeek() == DateTimeConstants.THURSDAY
+                    || mDateTime.getDayOfWeek() == DateTimeConstants.FRIDAY){
+                serviceId.add("U__");
+                serviceId.add("U_D");
+                serviceId.add("US_");
+            } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SATURDAY){
+                serviceId.add("_S_");
+                serviceId.add("_SD");
+                serviceId.add("US_");
+            } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SUNDAY){
+                serviceId.add("__D");
+                serviceId.add("_SD");
+                serviceId.add("U_D");
+            }
         }
 
-        if ((mDaysOfWeek &= 0b0000001) > 0){
-            serviceId.append("S");
-        } else {
-            serviceId.append("_");
-        }
-
-        if ((mDaysOfWeek &= 0b1000000) > 0) {
-            serviceId.append("D");
-        } else {
-            serviceId.append("_");
-        }
-
-        return serviceId.toString();
+        return serviceId;
     }
 
     public void setLine(String[] line){
@@ -104,5 +124,21 @@ public class Notification implements Parcelable {
 
     public String[] getLine(){
         return mLine;
+    }
+
+    public void setIsWeekly(boolean isWeekly){
+        this.mIsWeekly = isWeekly;
+    }
+
+    public boolean isWeekly(){
+        return mIsWeekly;
+    }
+
+    public DateTime getDateTime() {
+        return mDateTime;
+    }
+
+    public void setDateTime(DateTime dateTime) {
+        this.mDateTime = dateTime;
     }
 }

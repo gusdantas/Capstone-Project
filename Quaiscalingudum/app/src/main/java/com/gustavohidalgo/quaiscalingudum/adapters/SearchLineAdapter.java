@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
  */
 
 public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.LineViewHolder>  {
-    private ArrayList<String> mLines;
+    private ArrayList<String> mLinesFiltered, mLines;
     private static String[] mLineChosen;
 
     private static OnChooseLineListener mChooseLineListener;
@@ -39,26 +39,46 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
 
     @Override
     public void onBindViewHolder(LineViewHolder holder, int position) {
-        mLineChosen = mLines.get(position).split(",");
+        mLineChosen = mLinesFiltered.get(position).split(",");
         holder.mLineCodeTV.setText(mLineChosen[0]);
         holder.mLineNameTV.setText(mLineChosen[3]);
     }
 
     @Override
     public int getItemCount() {
-        if (mLines != null){
-            return mLines.size();
+        if (mLinesFiltered != null){
+            return mLinesFiltered.size();
         }
         return 0;
     }
 
     public void setLines(ArrayList<String> lines){
-        this.mLines = lines;
+        this.mLines = new ArrayList<>();
+        this.mLinesFiltered = new ArrayList<>();
+        this.mLines.addAll(lines);
+        this.mLinesFiltered.addAll(lines);
         notifyDataSetChanged();
     }
 
     public void setChooseLineListener(OnChooseLineListener chooseLineListener){
         mChooseLineListener = chooseLineListener;
+    }
+
+    public void linesFilter(String filter) {
+        mLinesFiltered.clear();
+        if(filter.isEmpty()){
+            mLinesFiltered.addAll(mLines);
+        } else {
+            filter = filter.toLowerCase();
+            for(String item : mLines){
+                String[] line = item.split(",");
+                if(line[0].toLowerCase().replaceAll("\"", "").contains(filter)
+                        || line[3].toLowerCase().replaceAll("\"", "").contains(filter)){
+                    mLinesFiltered.add(item);
+                    notifyDataSetChanged();
+                }
+            }
+        }
     }
 
     public static class LineViewHolder extends RecyclerView.ViewHolder

@@ -29,6 +29,7 @@ public class AddNotificationActivity extends AppCompatActivity
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
                 mNotification = new Notification();
+                mNotification.setIsWeekly(false);
             } else {
                 getSupportActionBar().setTitle("Edit notification");
             }

@@ -7,11 +7,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -28,6 +33,23 @@ public class DetailsFragment extends Fragment {
 
     private Notification mNotification;
     private String[] mLine;
+
+    @BindView(R.id.line_code_tv)
+    TextView mLineCodeTV;
+    @BindView(R.id.destination_rg)
+    RadioGroup mDestinationRG;
+    @BindView(R.id.destination_before_rb)
+    RadioButton mDestinationBeforeRB;
+    @BindView(R.id.destination_after_rb)
+    RadioButton mDestinationAfterRB;
+    @BindView(R.id.departure_stop_sp)
+    Spinner mDepartureStopSP;
+    @BindView(R.id.departure_time_rg)
+    RadioGroup mDepartureTimeRG;
+    @BindView(R.id.departure_time_before_rb)
+    RadioButton mDepartureTimeBeforeRB;
+    @BindView(R.id.departure_time_after_rb)
+    RadioButton mDepartureTimeAfterRB;
 
     private OnEditNotificationListener mListener;
 
@@ -65,6 +87,7 @@ public class DetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
+
         return view;
     }
 

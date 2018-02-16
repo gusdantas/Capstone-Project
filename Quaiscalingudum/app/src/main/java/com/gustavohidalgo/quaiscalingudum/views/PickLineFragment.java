@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
@@ -46,6 +47,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     private Notification mNotification;
     private ArrayList<String> mLines;
+    private SearchLineAdapter mSearchLineAdapter;
 
     private OnEditNotificationListener mListener;
 
@@ -76,8 +78,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
             mNotification = getArguments().getParcelable(NOTIFICATION);
             mLines = getArguments().getStringArrayList(LINES);
         }
-
-
+        daysFilter(mNotification.getServiceIds());
+        Toast.makeText(getActivity(), "stop", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -89,25 +91,12 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         mSearchView = view.findViewById(R.id.searchView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mLinesRV.setLayoutManager(layoutManager);
-        SearchLineAdapter searchLineAdapter = new SearchLineAdapter();
-        searchLineAdapter.setChooseLineListener(this);
-        searchLineAdapter.setLines(mLines);
-        mLinesRV.setAdapter(searchLineAdapter);
+        mSearchLineAdapter = new SearchLineAdapter();
+        mSearchLineAdapter.setChooseLineListener(this);
+        mSearchLineAdapter.setLines(mLines);
+        mLinesRV.setAdapter(mSearchLineAdapter);
+        mSearchView.setOnQueryTextListener(this);
         return view;
-    }
-
-    @OnClick(R.id.next_detail_bt)
-    public void onNextPressed() {
-        if (mListener != null && mNotification.getLine() != null) {
-            mListener.toDetails(mNotification);
-        }
-    }
-
-    @OnClick(R.id.back_eta_bt)
-    public void onBackPressed() {
-        if (mListener != null) {
-            mListener.toEta(mNotification);
-        }
     }
 
     @Override
@@ -129,12 +118,14 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        mSearchLineAdapter.linesFilter(query);
+        return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        return false;
+        mSearchLineAdapter.linesFilter(newText);
+        return true;
     }
 
     @Override
@@ -142,5 +133,42 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         mLineCodeSelectedTV.setText(line[0]);
         mLineNameSelectedTV.setText(line[3]);
         mNotification.setLine(line);
+    }
+
+    public void daysFilter(ArrayList<String> filters) {
+        ArrayList<String> itemsCopy = new ArrayList<>();
+        ArrayList<String> itemsToRemove = new ArrayList<>();
+        itemsCopy.addAll(mLines);
+        mLines.clear();
+        if(filters.isEmpty()){
+            mLines.addAll(itemsCopy);
+        } else {
+            for (String filter : filters) {
+                filter = filter.toUpperCase();
+                itemsToRemove.clear();
+                for(String item : itemsCopy){
+                    String[] line = item.split(",");
+                    if(line[1].toUpperCase().replaceAll("\"", "").equals(filter)){
+                        mLines.add(item);
+                        itemsToRemove.add(item);
+                    }
+                }
+                itemsCopy.removeAll(itemsToRemove);
+            }
+        }
+    }
+
+    @OnClick(R.id.next_detail_bt)
+    public void onNextPressed() {
+        if (mListener != null && mNotification.getLine() != null) {
+            mListener.toDetails(mNotification);
+        }
+    }
+
+    @OnClick(R.id.back_eta_bt)
+    public void onBackPressed() {
+        if (mListener != null) {
+            mListener.toEta(mNotification);
+        }
     }
 }
