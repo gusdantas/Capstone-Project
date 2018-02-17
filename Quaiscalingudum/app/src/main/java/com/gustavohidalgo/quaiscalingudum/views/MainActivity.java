@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
-    public static ArrayList<String> sLines;
+    public static ArrayList<String> sLines, sStops;
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity
 
         if (sLines == null){
             sLines = FileHelper.getLines(R.raw.trips, this);
+        }
+        if (sStops == null){
+            sStops = FileHelper.getLines(R.raw.stop_times, this);
         }
     }
 
@@ -215,6 +218,7 @@ public class MainActivity extends AppCompatActivity
     private void addNotification(){
         Intent intent = new Intent(this, AddNotificationActivity.class);
         intent.putExtra("lines", sLines);
+        intent.putExtra("stops", sStops);
         startActivity(intent);
     }
 }

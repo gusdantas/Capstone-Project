@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {
     private Notification mNotification;
-    private static ArrayList<String> sLines;
+    private static ArrayList<String> sLines, sStops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,7 @@ public class AddNotificationActivity extends AppCompatActivity
             Intent intent = getIntent();
             mNotification = intent.getParcelableExtra("old_notification");
             sLines = intent.getStringArrayListExtra("lines");
+            sStops = intent.getStringArrayListExtra("stops");
 
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
@@ -56,7 +57,7 @@ public class AddNotificationActivity extends AppCompatActivity
 
     @Override
     public void toDetails(Notification notification) {
-        DetailsFragment detailsFragment = DetailsFragment.newInstance(notification);
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(notification, sStops);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, detailsFragment, "details").commit();

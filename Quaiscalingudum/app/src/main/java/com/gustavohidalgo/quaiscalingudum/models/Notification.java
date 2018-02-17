@@ -23,7 +23,7 @@ public class Notification implements Parcelable {
     public static final byte SATURDAY  = 0b0000001;
     private int mDaysOfWeek;
     private DateTime mDateTime;
-    private String[] mLine;
+    private String[] mLine, mStop;
     private boolean mIsWeekly;
 
     public Notification() {
@@ -140,5 +140,13 @@ public class Notification implements Parcelable {
 
     public void setDateTime(DateTime dateTime) {
         this.mDateTime = dateTime;
+    }
+
+    public void setStop(String[] stop){
+        this.mStop = stop;
+    }
+
+    public String[] getStop(){
+        return mStop;
     }
 }
