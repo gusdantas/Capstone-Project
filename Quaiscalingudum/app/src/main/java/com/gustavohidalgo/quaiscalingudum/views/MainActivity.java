@@ -27,11 +27,6 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.utils.FileHelper;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,7 +40,6 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
-    public static ArrayList<String> sLines, sStops;
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -82,13 +76,6 @@ public class MainActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
 
         initializeFirebase();
-
-        if (sLines == null){
-            sLines = FileHelper.getLines(R.raw.trips, this);
-        }
-        if (sStops == null){
-            sStops = FileHelper.getLines(R.raw.stop_times, this);
-        }
     }
 
     @Override
@@ -217,8 +204,6 @@ public class MainActivity extends AppCompatActivity
 
     private void addNotification(){
         Intent intent = new Intent(this, AddNotificationActivity.class);
-        intent.putExtra("lines", sLines);
-        intent.putExtra("stops", sStops);
         startActivity(intent);
     }
 }

@@ -20,6 +20,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".views.AddNotificationActivity"></activity>
+        <provider
+            android:authorities="com.gustavohidalgo.quaiscalingudum"
+            android:name=".data.TripsContentProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

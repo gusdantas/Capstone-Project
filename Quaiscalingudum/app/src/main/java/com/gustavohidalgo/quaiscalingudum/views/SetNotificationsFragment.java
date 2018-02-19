@@ -3,14 +3,19 @@ package com.gustavohidalgo.quaiscalingudum.views;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextClock;
+import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -23,12 +28,21 @@ import butterknife.OnClick;
  * create an instance of this fragment.
  */
 public class SetNotificationsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String NOTIFICATION = "notification";
 
-    // TODO: Rename and change types of parameters
+    @BindView(R.id.line_code_details_tv)
+    TextView mLineCodeTV;
+    @BindView(R.id.line_name_details_tv)
+    TextView mLineNameTV;
+    @BindView(R.id.line_time_details_tv)
+    TextClock mArrivalTime;
+    @BindView(R.id.notification_name_et)
+    EditText mNotificationName;
+    @BindView(R.id.notifications_added_rv)
+    RecyclerView mNotificationsRV;
+
     private Notification mNotification;
+
 
     private OnEditNotificationListener mListener;
 
