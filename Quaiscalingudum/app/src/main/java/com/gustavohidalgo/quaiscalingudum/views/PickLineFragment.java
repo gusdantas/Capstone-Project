@@ -2,7 +2,6 @@ package com.gustavohidalgo.quaiscalingudum.views;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -52,16 +51,9 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     private static final String NOTIFICATION = "notification";
     private static final String LINES = "lines";
 
-    public static final String[] TRIPS_PROJECTION = {
+    public static final String[] PICK_LINE_PROJECTION = {
             ROUTE_ID, SERVICE_ID, TRIP_ID, TRIP_HEADSIGN, DIRECTION_ID, SHAPE_ID
     };
-
-    public static final int INDEX_TRIP_ROUTE_ID = 0;
-    public static final int INDEX_TRIP_SERVICE_ID = 1;
-    public static final int INDEX_TRIP_TRIP_ID = 2;
-    public static final int INDEX_TRIP_TRIP_HEADSIGN_ID = 3;
-    public static final int INDEX_TRIP_DIRECTION_ID = 4;
-    public static final int INDEX_TRIP_SHAPE_ID = 5;
 
     private static final int ID_TRIPS_LOADER = 353;
 
@@ -76,9 +68,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     private Notification mNotification;
     private ArrayList<String> mLines;
     private SearchLineAdapter mSearchLineAdapter;
-    private SQLiteDatabase mDb;
-    private Uri mUri;
     private int mPosition = RecyclerView.NO_POSITION;
+    private String mQuery = "";
 
     private OnEditNotificationListener mListener;
 
@@ -109,11 +100,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
             mNotification = getArguments().getParcelable(NOTIFICATION);
             mLines = getArguments().getStringArrayList(LINES);
         }
-        //mUri = getActivity().getIntent().getData();
-//      COMPLETED (17) Throw a NullPointerException if that URI is null
-        //if (mUri == null) throw new NullPointerException("URI for DetailActivity cannot be null");
+
         getLoaderManager().initLoader(ID_TRIPS_LOADER, null, this);
-        daysFilter(mNotification.getServiceIds());
         Toast.makeText(getActivity(), "stop", Toast.LENGTH_SHORT).show();
     }
 
@@ -126,11 +114,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         mSearchView = view.findViewById(R.id.searchView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         TripsDbHelper tripsDbHelper = new TripsDbHelper(getActivity());
-        mDb = tripsDbHelper.getWritableDatabase();
         mLinesRV.setLayoutManager(layoutManager);
         mSearchLineAdapter = new SearchLineAdapter(getActivity(), this);
-        //mSearchLineAdapter.setChooseLineListener(this);
-        //mSearchLineAdapter.setLines(mLines);
         mLinesRV.setAdapter(mSearchLineAdapter);
         mSearchView.setOnQueryTextListener(this);
         return view;
@@ -156,12 +141,14 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public boolean onQueryTextSubmit(String query) {
         mSearchLineAdapter.linesFilter(query);
+        mQuery = query;
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         mSearchLineAdapter.linesFilter(newText);
+        mQuery = newText;
         return true;
     }
 
@@ -212,24 +199,26 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-
             case ID_TRIPS_LOADER:
                 /* URI for all rows of weather data in our weather table */
-                Uri tripsQueryUri = TripsContract.TripsEntry.CONTENT_URI;
+                Uri tripsQueryUri = TripsContract.TripsEntry.TRIPS_CONTENT_URI;
                 /* Sort order: Ascending by date */
-                String sortOrder = TripsContract.TripsEntry.TRIP_ID + " ASC";
+                String sortOrder = TripsContract.TripsEntry._ID + " ASC";
                 /*
                  * A SELECTION in SQL declares which rows you'd like to return. In our case, we
                  * want all weather data from today onwards that is stored in our weather table.
                  * We created a handy method to do that in our WeatherEntry class.
                  */
                 //String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards();
+                String selection = TripsContract.TripsEntry.ROUTE_ID + "=? OR "
+                        + TripsContract.TripsEntry.TRIP_HEADSIGN + "=?";
+                String[] selectionArgs = new String[]{mQuery};
 
                 return new CursorLoader(getActivity(),
                         tripsQueryUri,
-                        TRIPS_PROJECTION,
                         null,
-                        null,
+                        selection,
+                        selectionArgs,
                         sortOrder);
 
             default:

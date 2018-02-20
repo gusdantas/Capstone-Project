@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Created by hdant on 14/02/2018.
  */
 
-public final class FileHelper {
+public class FileHelper {
 
     public static ArrayList<String> getLines(int resource, Context context) {
         ArrayList<String> lines = new ArrayList<>();
@@ -39,4 +39,6 @@ public final class FileHelper {
 
         return lines;
     }
+
+
 }

@@ -23,19 +23,15 @@ import butterknife.ButterKnife;
 public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.LineViewHolder>  {
     private final Context mContext;
     private Cursor mCursor;
-    //private ArrayList<String> mLinesFiltered, mLines;
-    //private static String[] mLineChosen;
     private final OnChooseLineListener mChooseLineListener;
 
     public SearchLineAdapter(Context context, OnChooseLineListener chooseLineListener){
-
         this.mContext = context;
         this.mChooseLineListener = chooseLineListener;
     }
 
     @Override
     public LineViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         View view = layoutInflater.inflate(R.layout.line_item, parent, false);
         view.setFocusable(true);
@@ -45,22 +41,14 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
     @Override
     public void onBindViewHolder(LineViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-
         String code = mCursor.getString(mCursor.getColumnIndex(TripsContract.TripsEntry.ROUTE_ID));
         String name = mCursor.getString(mCursor.getColumnIndex(TripsContract.TripsEntry.TRIP_HEADSIGN));
         holder.mLineCodeTV.setText(code);
         holder.mLineNameTV.setText(name);
-//        mLineChosen = mLinesFiltered.get(position).split(",");
-//        holder.mLineCodeTV.setText(mLineChosen[0]);
-//        holder.mLineNameTV.setText(mLineChosen[3]);
     }
 
     @Override
     public int getItemCount() {
-//        if (mLinesFiltered != null){
-//            return mLinesFiltered.size();
-//        }
-//        return 0;
         if (null == mCursor) return 0;
         return mCursor.getCount();
     }
@@ -69,18 +57,6 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         mCursor = newCursor;
         notifyDataSetChanged();
     }
-
-//    public void setLines(ArrayList<String> lines){
-//        this.mLines = new ArrayList<>();
-//        this.mLinesFiltered = new ArrayList<>();
-//        this.mLines.addAll(lines);
-//        this.mLinesFiltered.addAll(lines);
-//        notifyDataSetChanged();
-//    }
-
-//    public void setChooseLineListener(OnChooseLineListener chooseLineListener){
-//        mChooseLineListener = chooseLineListener;
-//    }
 
     public void linesFilter(String filter) {
 //        mLinesFiltered.clear();
@@ -116,10 +92,7 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-//          COMPLETED (37) Instead of passing the String for the clicked item, pass the date from the cursor
             mCursor.moveToPosition(adapterPosition);
-            //mClickHandler.onClick(dateInMillis);
-            //mChooseLineListener.lineChosen(mLineChosen);
             String[] lineChosen = new String[mCursor.getCount()];
             for(int i = 0; i < 6; i++){
                 lineChosen[i] = mCursor.getString(i);

@@ -1,5 +1,6 @@
 package com.gustavohidalgo.quaiscalingudum.views;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,16 +25,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.utils.FileHelper;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -82,6 +87,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+        //fileToDb(R.raw.trips);
     }
 
     @Override

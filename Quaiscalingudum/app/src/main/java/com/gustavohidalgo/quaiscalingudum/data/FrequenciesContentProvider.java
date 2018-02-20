@@ -17,7 +17,7 @@ import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.T
  * Created by hdant on 18/02/2018.
  */
 
-public class TripsContentProvider extends ContentProvider {
+public class FrequenciesContentProvider extends ContentProvider {
 
     private TripsDbHelper mTripsDbHelper;
 

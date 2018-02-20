@@ -4,18 +4,18 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.gustavohidalgo.quaiscalingudum.data.TripsContract.*;
+import com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry;
 
 /**
  * Created by hdant on 18/02/2018.
  */
 
-public class TripsDbHelper extends SQLiteOpenHelper {
+public class FrequenciesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "trips.db";
     private static final int DATABASE_VERSION = 1;
 
-    public TripsDbHelper(Context context) {
+    public FrequenciesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
