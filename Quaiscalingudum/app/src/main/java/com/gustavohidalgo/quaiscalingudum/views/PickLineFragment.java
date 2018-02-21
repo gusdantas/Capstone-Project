@@ -140,8 +140,9 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        mSearchLineAdapter.linesFilter(query);
-        mQuery = query;
+//        mSearchLineAdapter.linesFilter(query);
+//        mQuery = query;
+//        getLoaderManager().restartLoader(ID_TRIPS_LOADER, null, this);
         return true;
     }
 
@@ -149,6 +150,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     public boolean onQueryTextChange(String newText) {
         mSearchLineAdapter.linesFilter(newText);
         mQuery = newText;
+        getLoaderManager().restartLoader(ID_TRIPS_LOADER, null, this);
         return true;
     }
 
@@ -209,10 +211,9 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
                  * want all weather data from today onwards that is stored in our weather table.
                  * We created a handy method to do that in our WeatherEntry class.
                  */
-                //String selection = WeatherContract.WeatherEntry.getSqlSelectForTodayOnwards();
-                String selection = TripsContract.TripsEntry.ROUTE_ID + "=? OR "
-                        + TripsContract.TripsEntry.TRIP_HEADSIGN + "=?";
-                String[] selectionArgs = new String[]{mQuery};
+                String selection = "((" + TripsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
+                        + TripsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?))";
+                String[] selectionArgs = new String[]{"%"+mQuery+"%"};
 
                 return new CursorLoader(getActivity(),
                         tripsQueryUri,

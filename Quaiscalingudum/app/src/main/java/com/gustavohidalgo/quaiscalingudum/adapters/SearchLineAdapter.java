@@ -93,9 +93,9 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            String[] lineChosen = new String[mCursor.getCount()];
-            for(int i = 0; i < 6; i++){
-                lineChosen[i] = mCursor.getString(i);
+            String[] lineChosen = new String[6];
+            for(int i = 1; i < 7; i++){
+                lineChosen[i-1] = mCursor.getString(i);
             }
             mChooseLineListener.lineChosen(lineChosen);
         }

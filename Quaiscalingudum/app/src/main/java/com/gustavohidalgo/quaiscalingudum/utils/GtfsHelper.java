@@ -21,23 +21,23 @@ import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.T
 
 public final class GtfsHelper {
 
-    private static void buildFrequencies(Context context){
+    public static void buildFrequencies(Context context){
         buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
     }
 
-    private static void buildRoutes(Context context){
+    public static void buildRoutes(Context context){
         buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
     }
 
-    private static void buildStopTimes(Context context){
+    public static void buildStopTimes(Context context){
         buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
     }
 
-    private static void buildStops(Context context){
+    public static void buildStops(Context context){
         buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
     }
 
-    private static void buildTrips(Context context){
+    public static void buildTrips(Context context){
         buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
     }
 

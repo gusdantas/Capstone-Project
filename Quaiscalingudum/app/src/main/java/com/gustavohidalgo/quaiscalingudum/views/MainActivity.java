@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.utils.GtfsHelper;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        //fileToDb(R.raw.trips);
+        //GtfsHelper.buildTrips(this);
     }
 
     @Override
