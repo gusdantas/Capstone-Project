@@ -24,6 +24,14 @@
             android:authorities="com.gustavohidalgo.quaiscalingudum"
             android:name=".data.TripsContentProvider"
             android:exported="false" />
+        <provider
+            android:authorities="com.gustavohidalgo.quaiscalingudum"
+            android:name=".data.FrequenciesContentProvider"
+            android:exported="false" />
+        <provider
+            android:authorities="com.gustavohidalgo.quaiscalingudum"
+            android:name=".data.StopTimesContentProvider"
+            android:exported="false" />
     </application>
 
 </manifest>

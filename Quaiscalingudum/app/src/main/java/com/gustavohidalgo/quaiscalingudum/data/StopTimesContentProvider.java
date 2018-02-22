@@ -11,25 +11,25 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.*;
+import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_TABLE_NAME;
 
 /**
  * Created by hdant on 18/02/2018.
  */
 
-public class FrequenciesContentProvider extends ContentProvider {
+public class StopTimesContentProvider extends ContentProvider {
 
-    private FrequenciesDbHelper mFrequenciesDbHelper;
+    private StopTimesDbHelper mStopTimesDbHelper;
 
-    public static final int FREQUENCIES = 100;
-    public static final int FREQUENCIES_WITH_ID = 101;
+    public static final int STOP_TIMES = 100;
+    public static final int STOP_TIMES_WITH_ID = 101;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        mFrequenciesDbHelper = new FrequenciesDbHelper(context);
+        mStopTimesDbHelper = new StopTimesDbHelper(context);
         return true;
     }
 
@@ -37,12 +37,12 @@ public class FrequenciesContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getReadableDatabase();
+        final SQLiteDatabase db = mStopTimesDbHelper.getReadableDatabase();
         int match = sUriMatcher.match(uri);
         Cursor retCursor;
             switch (match) {
-                case FREQUENCIES:
-                retCursor =  db.query(FREQUENCIES_TABLE_NAME,
+                case STOP_TIMES:
+                retCursor =  db.query(STOP_TIMES_TABLE_NAME,
                                 projection,
                                 selection,
                                 selectionArgs,
@@ -66,14 +66,14 @@ public class FrequenciesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mStopTimesDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         Uri returnUri; // URI to be returned
         switch (match) {
-            case FREQUENCIES:
-                long id = db.insert(FREQUENCIES_TABLE_NAME, null, values);
+            case STOP_TIMES:
+                long id = db.insert(STOP_TIMES_TABLE_NAME, null, values);
                 if ( id > 0 ) {
-                    returnUri = ContentUris.withAppendedId(FREQUENCIES_CONTENT_URI, id);
+                    returnUri = ContentUris.withAppendedId(StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI, id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -87,24 +87,24 @@ public class FrequenciesContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mStopTimesDbHelper.getWritableDatabase();
 
         int match = sUriMatcher.match(uri);
-        int frequenciesDeleted; // starts as 0
+        int stopTimesDeleted; // starts as 0
 
         switch (match) {
-            case FREQUENCIES_WITH_ID:
+            case STOP_TIMES_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                frequenciesDeleted = db.delete(FREQUENCIES_TABLE_NAME, "_id=?", new String[]{id});
+                stopTimesDeleted = db.delete(STOP_TIMES_TABLE_NAME, "_id=?", new String[]{id});
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        if (frequenciesDeleted != 0) {
+        if (stopTimesDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        return frequenciesDeleted;
+        return stopTimesDeleted;
     }
 
     @Override
@@ -116,10 +116,9 @@ public class FrequenciesContentProvider extends ContentProvider {
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY, FrequenciesContract.PATH_FREQUENCIES,
-                FREQUENCIES);
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY,
-                FrequenciesContract.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
+        uriMatcher.addURI(StopTimesContract.AUTHORITY, StopTimesContract.PATH_STOP_TIMES, STOP_TIMES);
+        uriMatcher.addURI(StopTimesContract.AUTHORITY,
+                StopTimesContract.PATH_STOP_TIMES + "/#", STOP_TIMES_WITH_ID);
         return uriMatcher;
     }
 }

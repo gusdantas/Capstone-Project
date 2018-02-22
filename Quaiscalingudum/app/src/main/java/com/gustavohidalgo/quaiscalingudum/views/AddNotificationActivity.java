@@ -56,7 +56,7 @@ public class AddNotificationActivity extends AppCompatActivity
 
     @Override
     public void toPickLine(Notification notification) {
-        PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification, sTrips);
+        PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, pickLineFragment, "pickline").commit();

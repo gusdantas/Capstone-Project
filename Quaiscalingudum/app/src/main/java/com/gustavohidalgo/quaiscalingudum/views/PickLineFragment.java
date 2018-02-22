@@ -49,7 +49,6 @@ import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.T
 public class PickLineFragment extends Fragment implements SearchView.OnQueryTextListener,
         OnChooseLineListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String NOTIFICATION = "notification";
-    private static final String LINES = "lines";
 
     public static final String[] PICK_LINE_PROJECTION = {
             ROUTE_ID, SERVICE_ID, TRIP_ID, TRIP_HEADSIGN, DIRECTION_ID, SHAPE_ID
@@ -69,7 +68,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     private ArrayList<String> mLines;
     private SearchLineAdapter mSearchLineAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
-    private String mQuery = "";
+    private String mLineQuery = "";
+    private String mDaysQuery;
 
     private OnEditNotificationListener mListener;
 
@@ -84,11 +84,10 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
      * @param notification Parameter 1.
      * @return A new instance of fragment PickLineFragment.
      */
-    public static PickLineFragment newInstance(Notification notification, ArrayList<String> lines) {
+    public static PickLineFragment newInstance(Notification notification) {
         PickLineFragment fragment = new PickLineFragment();
         Bundle args = new Bundle();
         args.putParcelable(NOTIFICATION, notification);
-        args.putStringArrayList(LINES, lines);
         fragment.setArguments(args);
         return fragment;
     }
@@ -98,11 +97,9 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
-            mLines = getArguments().getStringArrayList(LINES);
+            mDaysQuery = mNotification.getServiceIds();
         }
-
         getLoaderManager().initLoader(ID_TRIPS_LOADER, null, this);
-        Toast.makeText(getActivity(), "stop", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -113,7 +110,6 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         ButterKnife.bind(this, view);
         mSearchView = view.findViewById(R.id.searchView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        TripsDbHelper tripsDbHelper = new TripsDbHelper(getActivity());
         mLinesRV.setLayoutManager(layoutManager);
         mSearchLineAdapter = new SearchLineAdapter(getActivity(), this);
         mLinesRV.setAdapter(mSearchLineAdapter);
@@ -140,16 +136,13 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-//        mSearchLineAdapter.linesFilter(query);
-//        mQuery = query;
-//        getLoaderManager().restartLoader(ID_TRIPS_LOADER, null, this);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         mSearchLineAdapter.linesFilter(newText);
-        mQuery = newText;
+        mLineQuery = newText;
         getLoaderManager().restartLoader(ID_TRIPS_LOADER, null, this);
         return true;
     }
@@ -159,29 +152,6 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         mLineCodeSelectedTV.setText(line[0]);
         mLineNameSelectedTV.setText(line[3]);
         mNotification.setLine(line);
-    }
-
-    public void daysFilter(ArrayList<String> filters) {
-        ArrayList<String> itemsCopy = new ArrayList<>();
-        ArrayList<String> itemsToRemove = new ArrayList<>();
-        itemsCopy.addAll(mLines);
-        mLines.clear();
-        if(filters.isEmpty()){
-            mLines.addAll(itemsCopy);
-        } else {
-            for (String filter : filters) {
-                filter = filter.toUpperCase();
-                itemsToRemove.clear();
-                for(String item : itemsCopy){
-                    String[] line = item.split(",");
-                    if(line[1].toUpperCase().replaceAll("\"", "").equals(filter)){
-                        mLines.add(item);
-                        itemsToRemove.add(item);
-                    }
-                }
-                itemsCopy.removeAll(itemsToRemove);
-            }
-        }
     }
 
     @OnClick(R.id.next_detail_bt)
@@ -211,9 +181,11 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
                  * want all weather data from today onwards that is stored in our weather table.
                  * We created a handy method to do that in our WeatherEntry class.
                  */
-                String selection = "((" + TripsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
-                        + TripsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?))";
-                String[] selectionArgs = new String[]{"%"+mQuery+"%"};
+                String selection = "(((" + TripsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
+                        + TripsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?)) AND ("
+                        + TripsContract.TripsEntry.SERVICE_ID + " LIKE ?))";
+                String[] selectionArgs = new String[]{"%" + mLineQuery + "%",
+                        "%" + mLineQuery + "%", "%" + mDaysQuery + "%"};
 
                 return new CursorLoader(getActivity(),
                         tripsQueryUri,

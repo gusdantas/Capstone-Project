@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_COLUMNS;
+import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI;
 import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_COLUMNS;
 import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_CONTENT_URI;
 
@@ -22,7 +24,7 @@ import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.T
 public final class GtfsHelper {
 
     public static void buildFrequencies(Context context){
-        buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
+        buildDb(context, R.raw.frequencies, FREQUENCIES_COLUMNS, FREQUENCIES_CONTENT_URI);
     }
 
     public static void buildRoutes(Context context){
