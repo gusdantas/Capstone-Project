@@ -22,15 +22,7 @@
         <activity android:name=".views.AddNotificationActivity"></activity>
         <provider
             android:authorities="com.gustavohidalgo.quaiscalingudum"
-            android:name=".data.TripsContentProvider"
-            android:exported="false" />
-        <provider
-            android:authorities="com.gustavohidalgo.quaiscalingudum"
-            android:name=".data.FrequenciesContentProvider"
-            android:exported="false" />
-        <provider
-            android:authorities="com.gustavohidalgo.quaiscalingudum"
-            android:name=".data.StopTimesContentProvider"
+            android:name=".data.GtfsContentProvider"
             android:exported="false" />
     </application>
 

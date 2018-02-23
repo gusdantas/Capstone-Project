@@ -11,25 +11,25 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.*;
+import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_TABLE_NAME;
 
 /**
  * Created by hdant on 18/02/2018.
  */
 
-public class FrequenciesContentProvider extends ContentProvider {
+public class TripsContentProvider extends ContentProvider {
 
-    private FrequenciesDbHelper mFrequenciesDbHelper;
+    private TripsDbHelper mTripsDbHelper;
 
-    public static final int FREQUENCIES = 100;
-    public static final int FREQUENCIES_WITH_ID = 101;
+    public static final int TRIPS = 100;
+    public static final int TRIPS_WITH_ID = 101;
 
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final UriMatcher sTripsUriMatcher = buildUriMatcher();
 
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        mFrequenciesDbHelper = new FrequenciesDbHelper(context);
+        mTripsDbHelper = new TripsDbHelper(context);
         return true;
     }
 
@@ -37,12 +37,12 @@ public class FrequenciesContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getReadableDatabase();
-        int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mTripsDbHelper.getReadableDatabase();
+        int match = sTripsUriMatcher.match(uri);
         Cursor retCursor;
             switch (match) {
-                case FREQUENCIES:
-                retCursor =  db.query(FREQUENCIES_TABLE_NAME,
+                case TRIPS:
+                retCursor =  db.query(TRIPS_TABLE_NAME,
                                 projection,
                                 selection,
                                 selectionArgs,
@@ -66,14 +66,14 @@ public class FrequenciesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
-        int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mTripsDbHelper.getWritableDatabase();
+        int match = sTripsUriMatcher.match(uri);
         Uri returnUri; // URI to be returned
         switch (match) {
-            case FREQUENCIES:
-                long id = db.insert(FREQUENCIES_TABLE_NAME, null, values);
+            case TRIPS:
+                long id = db.insert(TRIPS_TABLE_NAME, null, values);
                 if ( id > 0 ) {
-                    returnUri = ContentUris.withAppendedId(FREQUENCIES_CONTENT_URI, id);
+                    returnUri = ContentUris.withAppendedId(TripsContract.TripsEntry.TRIPS_CONTENT_URI, id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -87,24 +87,24 @@ public class FrequenciesContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mTripsDbHelper.getWritableDatabase();
 
-        int match = sUriMatcher.match(uri);
-        int frequenciesDeleted; // starts as 0
+        int match = sTripsUriMatcher.match(uri);
+        int tripsDeleted; // starts as 0
 
         switch (match) {
-            case FREQUENCIES_WITH_ID:
+            case TRIPS_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                frequenciesDeleted = db.delete(FREQUENCIES_TABLE_NAME, "_id=?", new String[]{id});
+                tripsDeleted = db.delete(TRIPS_TABLE_NAME, "_id=?", new String[]{id});
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        if (frequenciesDeleted != 0) {
+        if (tripsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        return frequenciesDeleted;
+        return tripsDeleted;
     }
 
     @Override
@@ -116,10 +116,9 @@ public class FrequenciesContentProvider extends ContentProvider {
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY, FrequenciesContract.PATH_FREQUENCIES,
-                FREQUENCIES);
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY,
-                FrequenciesContract.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
+        uriMatcher.addURI(TripsContract.AUTHORITY, TripsContract.PATH_TRIPS, TRIPS);
+        uriMatcher.addURI(TripsContract.AUTHORITY,
+                TripsContract.PATH_TRIPS + "/#", TRIPS_WITH_ID);
         return uriMatcher;
     }
 }

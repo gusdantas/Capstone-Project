@@ -1,19 +1,26 @@
 package com.gustavohidalgo.quaiscalingudum.views;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.data.StopTimesContract;
+import com.gustavohidalgo.quaiscalingudum.data.TripsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
@@ -36,10 +43,12 @@ import butterknife.OnClick;
  * create an instance of this fragment.
  */
 public class DetailsFragment extends Fragment implements AdapterView.OnItemSelectedListener,
-        RadioGroup.OnCheckedChangeListener {
+        RadioGroup.OnCheckedChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String NOTIFICATION = "notification";
-    private static final String STOP_TIMES = "stop_times";
-    private static final String FREQUENCIES = "frequencies";
+//    private static final String STOP_TIMES = "stop_times";
+//    private static final String FREQUENCIES = "frequencies";
+    private static final int ID_FREQUENCIES_LOADER = 11;
+    private static final int ID_STOP_TIMES_LOADER = 12;
 
     private Notification mNotification;
     private String[] mLine;
@@ -47,17 +56,14 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     private ArrayList<String> mStopsFiltered = new ArrayList<>();
     private ArrayList<String> mFrequenciesFiltered = new ArrayList<>();
     private DateTime mDateTime;
+    private String mTripId = "";
+    SimpleCursorAdapter mSelectStopAdapter;
+    //private int mPosition = RecyclerView.NO_POSITION;
 
     @BindView(R.id.line_code_tv)
     TextView mLineCodeTV;
     @BindView(R.id.line_name_tv)
     TextView mLineNameTV;
-//    @BindView(R.id.destination_rg)
-//    RadioGroup mDestinationRG;
-//    @BindView(R.id.destination_before_rb)
-//    RadioButton mDestinationBeforeRB;
-//    @BindView(R.id.destination_after_rb)
-//    RadioButton mDestinationAfterRB;
     @BindView(R.id.departure_stop_sp)
     Spinner mDepartureStopSP;
     @BindView(R.id.departure_time_rg)
@@ -85,8 +91,8 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
         args.putParcelable(NOTIFICATION, notification);
-        args.putStringArrayList(STOP_TIMES, stops);
-        args.putStringArrayList(FREQUENCIES, frequencies);
+//        args.putStringArrayList(STOP_TIMES, stops);
+//        args.putStringArrayList(FREQUENCIES, frequencies);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,13 +102,16 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
-            mStops = getArguments().getStringArrayList(STOP_TIMES);
-            mStops.remove(0);
-            mFrequencies = getArguments().getStringArrayList(FREQUENCIES);
-            mFrequencies.remove(0);
+//            mStops = getArguments().getStringArrayList(STOP_TIMES);
+//            mStops.remove(0);
+//            mFrequencies = getArguments().getStringArrayList(FREQUENCIES);
+//            mFrequencies.remove(0);
             mLine = mNotification.getLine();
-            listFilter(mLine[2].replaceAll("\"", ""), 0, mStops, mStopsFiltered);
-            listFilter(mLine[2].replaceAll("\"", ""), 0, mFrequencies, mFrequenciesFiltered);
+            mTripId = mLine[2];
+            getLoaderManager().initLoader(ID_STOP_TIMES_LOADER, null, this);
+
+//            listFilter(mLine[2].replaceAll("\"", ""), 0, mStops, mStopsFiltered);
+//            listFilter(mLine[2].replaceAll("\"", ""), 0, mFrequencies, mFrequenciesFiltered);
         }
     }
 
@@ -114,11 +123,21 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         ButterKnife.bind(this, view);
         mLineCodeTV.setText(mLine[0].replaceAll("\"", ""));
         mLineNameTV.setText(mLine[3].replaceAll("\"", ""));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
-                R.layout.support_simple_spinner_dropdown_item, mStopsFiltered);
-        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        String[] strings = {StopTimesContract.StopTimesEntry.STOP_ID,
+                StopTimesContract.StopTimesEntry.STOP_SEQUENCE};
+        int[] ints = {android.R.id.text1, android.R.id.text1};
+        mSelectStopAdapter = new SimpleCursorAdapter(
+                getActivity(),
+                R.layout.support_simple_spinner_dropdown_item,
+                null,
+                strings,
+                ints,
+                0);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+//                R.layout.support_simple_spinner_dropdown_item, mStopsFiltered);
+//        adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mDepartureStopSP.setOnItemSelectedListener(this);
-        mDepartureStopSP.setAdapter(adapter);
+        mDepartureStopSP.setAdapter(mSelectStopAdapter);
         return view;
     }
 
@@ -234,5 +253,71 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 mNotification.getDateTime().getMonthOfYear(),
                 mNotification.getDateTime().getDayOfMonth(),
                 Integer.parseInt(choosenTime[0]), Integer.parseInt(choosenTime[0]),0);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case ID_STOP_TIMES_LOADER:
+                /* URI for all rows of weather data in our weather table */
+                Uri stopTimesQueryUri = StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI;
+                /* Sort order: Ascending by date */
+                String sortOrder = StopTimesContract.StopTimesEntry._ID + " ASC";
+                /*
+                 * A SELECTION in SQL declares which rows you'd like to return. In our case, we
+                 * want all weather data from today onwards that is stored in our weather table.
+                 * We created a handy method to do that in our WeatherEntry class.
+                 */
+                String selection = "(" + StopTimesContract.StopTimesEntry.TRIP_ID + " = ?)";
+                String[] selectionArgs = new String[]{"%" + mTripId + "%"};
+
+                return new CursorLoader(getActivity(),
+                        stopTimesQueryUri,
+                        null,
+                        selection,
+                        selectionArgs,
+                        sortOrder);
+
+//            case ID_FREQUENCIES_LOADER:
+//                /* URI for all rows of weather data in our weather table */
+//                Uri frequenciesQueryUri = TripsContract.TripsEntry.FREQUENCIES_CONTENT_URI;
+//                /* Sort order: Ascending by date */
+//                String sortOrder = TripsContract.TripsEntry._ID + " ASC";
+//                /*
+//                 * A SELECTION in SQL declares which rows you'd like to return. In our case, we
+//                 * want all weather data from today onwards that is stored in our weather table.
+//                 * We created a handy method to do that in our WeatherEntry class.
+//                 */
+//                String selection = "(((" + TripsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
+//                        + TripsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?)) AND ("
+//                        + TripsContract.TripsEntry.SERVICE_ID + " LIKE ?))";
+//                String[] selectionArgs = new String[]{"%" + mLineQuery + "%",
+//                        "%" + mLineQuery + "%", "%" + mDaysQuery + "%"};
+//
+//                return new CursorLoader(getActivity(),
+//                        frequenciesQueryUri,
+//                        null,
+//                        selection,
+//                        selectionArgs,
+//                        sortOrder);
+//                break;
+
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mSelectStopAdapter.swapCursor(data);
+//        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+//        mLinesRV.smoothScrollToPosition(mPosition);
+        //if (data.getCount() != 0) showWeatherDataView();
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mSelectStopAdapter.swapCursor(null);
     }
 }

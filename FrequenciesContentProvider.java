@@ -11,25 +11,25 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_TABLE_NAME;
+import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.*;
 
 /**
  * Created by hdant on 18/02/2018.
  */
 
-public class StopTimesContentProvider extends ContentProvider {
+public class FrequenciesContentProvider extends ContentProvider {
 
-    private StopTimesDbHelper mStopTimesDbHelper;
+    private FrequenciesDbHelper mFrequenciesDbHelper;
 
-    public static final int STOP_TIMES = 100;
-    public static final int STOP_TIMES_WITH_ID = 101;
+    public static final int FREQUENCIES = 300;
+    public static final int FREQUENCIES_WITH_ID = 301;
 
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final UriMatcher sFrequenciesUriMatcher = buildUriMatcher();
 
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        mStopTimesDbHelper = new StopTimesDbHelper(context);
+        mFrequenciesDbHelper = new FrequenciesDbHelper(context);
         return true;
     }
 
@@ -37,12 +37,12 @@ public class StopTimesContentProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        final SQLiteDatabase db = mStopTimesDbHelper.getReadableDatabase();
-        int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mFrequenciesDbHelper.getReadableDatabase();
+        int match = sFrequenciesUriMatcher.match(uri);
         Cursor retCursor;
             switch (match) {
-                case STOP_TIMES:
-                retCursor =  db.query(STOP_TIMES_TABLE_NAME,
+                case FREQUENCIES:
+                retCursor =  db.query(FREQUENCIES_TABLE_NAME,
                                 projection,
                                 selection,
                                 selectionArgs,
@@ -66,14 +66,14 @@ public class StopTimesContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        final SQLiteDatabase db = mStopTimesDbHelper.getWritableDatabase();
-        int match = sUriMatcher.match(uri);
+        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
+        int match = sFrequenciesUriMatcher.match(uri);
         Uri returnUri; // URI to be returned
         switch (match) {
-            case STOP_TIMES:
-                long id = db.insert(STOP_TIMES_TABLE_NAME, null, values);
+            case FREQUENCIES:
+                long id = db.insert(FREQUENCIES_TABLE_NAME, null, values);
                 if ( id > 0 ) {
-                    returnUri = ContentUris.withAppendedId(StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI, id);
+                    returnUri = ContentUris.withAppendedId(FREQUENCIES_CONTENT_URI, id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -87,24 +87,24 @@ public class StopTimesContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        final SQLiteDatabase db = mStopTimesDbHelper.getWritableDatabase();
+        final SQLiteDatabase db = mFrequenciesDbHelper.getWritableDatabase();
 
-        int match = sUriMatcher.match(uri);
-        int stopTimesDeleted; // starts as 0
+        int match = sFrequenciesUriMatcher.match(uri);
+        int frequenciesDeleted; // starts as 0
 
         switch (match) {
-            case STOP_TIMES_WITH_ID:
+            case FREQUENCIES_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                stopTimesDeleted = db.delete(STOP_TIMES_TABLE_NAME, "_id=?", new String[]{id});
+                frequenciesDeleted = db.delete(FREQUENCIES_TABLE_NAME, "_id=?", new String[]{id});
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        if (stopTimesDeleted != 0) {
+        if (frequenciesDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        return stopTimesDeleted;
+        return frequenciesDeleted;
     }
 
     @Override
@@ -116,9 +116,10 @@ public class StopTimesContentProvider extends ContentProvider {
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        uriMatcher.addURI(StopTimesContract.AUTHORITY, StopTimesContract.PATH_STOP_TIMES, STOP_TIMES);
-        uriMatcher.addURI(StopTimesContract.AUTHORITY,
-                StopTimesContract.PATH_STOP_TIMES + "/#", STOP_TIMES_WITH_ID);
+        uriMatcher.addURI(FrequenciesContract.AUTHORITY, FrequenciesContract.PATH_FREQUENCIES,
+                FREQUENCIES);
+        uriMatcher.addURI(FrequenciesContract.AUTHORITY,
+                FrequenciesContract.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
         return uriMatcher;
     }
 }

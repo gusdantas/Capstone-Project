@@ -5,7 +5,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.data.TripsContract;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +13,8 @@ import java.io.InputStreamReader;
 
 import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_COLUMNS;
 import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI;
+import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_COLUMNS;
+import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI;
 import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_COLUMNS;
 import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_CONTENT_URI;
 
@@ -32,7 +33,7 @@ public final class GtfsHelper {
     }
 
     public static void buildStopTimes(Context context){
-        buildDb(context, R.raw.trips, TRIPS_COLUMNS, TRIPS_CONTENT_URI);
+        buildDb(context, R.raw.stop_times, STOP_TIMES_COLUMNS, STOP_TIMES_CONTENT_URI);
     }
 
     public static void buildStops(Context context){

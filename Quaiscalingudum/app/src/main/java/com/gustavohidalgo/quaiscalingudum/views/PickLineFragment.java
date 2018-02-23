@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
 import com.gustavohidalgo.quaiscalingudum.data.TripsContract;
-import com.gustavohidalgo.quaiscalingudum.data.TripsDbHelper;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
@@ -65,7 +64,6 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     TextView mLineNameSelectedTV;
 
     private Notification mNotification;
-    private ArrayList<String> mLines;
     private SearchLineAdapter mSearchLineAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
     private String mLineQuery = "";

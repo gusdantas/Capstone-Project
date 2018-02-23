@@ -88,7 +88,13 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        //GtfsHelper.buildTrips(this);
+        Toast.makeText(this, "Building trips db", Toast.LENGTH_SHORT).show();
+        GtfsHelper.buildTrips(this);
+        Toast.makeText(this, "Building stop times db", Toast.LENGTH_SHORT).show();
+        GtfsHelper.buildStopTimes(this);
+        Toast.makeText(this, "Building frequencies db", Toast.LENGTH_SHORT).show();
+        GtfsHelper.buildFrequencies(this);
+        Toast.makeText(this, "Db built", Toast.LENGTH_SHORT).show();
     }
 
     @Override
