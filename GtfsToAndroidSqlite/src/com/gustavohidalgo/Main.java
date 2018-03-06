@@ -27,20 +27,28 @@ public class Main {
 
             Path path = Paths.get(location + table[1]);
 
-            try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
-                String line;
-                int i = 0;
-                br.readLine();
-                while ((line = br.readLine()) != null) {
-                    // process the line.
-                    //line = i + "," + line;
-                    app.insert(table[2], table[3], line);
-                    i++;
+            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\db\\gtfs.db");
+                 Statement stmt = conn.createStatement()) {
+
+                try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
+                    String line;
+                    int i = 0;
+                    br.readLine();
+                    while ((line = br.readLine()) != null) {
+                        // process the line.
+                        line = i + "," + line;
+
+                        stmt.executeUpdate(app.insert(table[2], table[3], line));
+                        i++;
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

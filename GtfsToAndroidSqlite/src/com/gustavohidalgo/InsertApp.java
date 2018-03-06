@@ -20,7 +20,7 @@ public class InsertApp {
         return conn;
     }
 
-    public void insert(String table, String columns, String value) {
+    public String insert(String table, String columns, String value) {
         String[] values = value.split(",");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("INSERT INTO ").append(table).append("(").append(columns).append(") VALUES(");
@@ -30,21 +30,22 @@ public class InsertApp {
         }
         stringBuilder.append(values[values.length-1]).append(")");
 
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(stringBuilder.toString())) {
-            for(int i = 1; i <= values.length; i++){
+        return stringBuilder.toString();
+
+//        try (Connection conn = this.connect();
+//             PreparedStatement pstmt = conn.prepareStatement(stringBuilder.toString())) {
+//            for(int i = 1; i <= values.length; i++){
 //                if(i == 1){
 //                    pstmt.setInt(i, Integer.parseInt(values[i-1]));
 //                } else {
 //                    pstmt.setString(i, values[i-1]);
 //                }
-                pstmt.setString(i, values[i-1]);
-            }
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+//            }
+//
+//            pstmt.executeUpdate();
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
     public void insertMetadata() {
