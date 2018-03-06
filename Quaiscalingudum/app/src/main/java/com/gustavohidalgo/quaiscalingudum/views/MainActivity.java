@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.data.DBHelper;
 import com.gustavohidalgo.quaiscalingudum.utils.GtfsHelper;
 import com.squareup.picasso.Picasso;
 
@@ -89,11 +90,18 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
         Toast.makeText(this, "Building trips db", Toast.LENGTH_SHORT).show();
-        GtfsHelper.buildTrips(this);
-        Toast.makeText(this, "Building stop times db", Toast.LENGTH_SHORT).show();
-        GtfsHelper.buildStopTimes(this);
-        Toast.makeText(this, "Building frequencies db", Toast.LENGTH_SHORT).show();
-        GtfsHelper.buildFrequencies(this);
+//        GtfsHelper.buildTrips(this);
+//        Toast.makeText(this, "Building stop times db", Toast.LENGTH_SHORT).show();
+//        GtfsHelper.buildStopTimes(this);
+//        Toast.makeText(this, "Building frequencies db", Toast.LENGTH_SHORT).show();
+//        GtfsHelper.buildFrequencies(this);
+        DBHelper dbImporterExporter = new DBHelper(this, "gtfs.db");
+//        try {
+//            dbImporterExporter.importDataBaseFromAssets();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        dbImporterExporter.isDataBaseExists();
         Toast.makeText(this, "Db built", Toast.LENGTH_SHORT).show();
     }
 
