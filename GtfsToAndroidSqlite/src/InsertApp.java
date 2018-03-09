@@ -18,7 +18,7 @@ public class InsertApp {
         return conn;
     }
 
-    public void insert(String table, String columns, String value) {
+    public String insert(String table, String columns, String value) {
         String[] values = value.split(",");
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("INSERT INTO ").append(table).append("(").append(columns).append(") VALUES(");

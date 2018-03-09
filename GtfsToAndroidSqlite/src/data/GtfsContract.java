@@ -15,6 +15,7 @@ public class GtfsContract {
     public static final class TripsEntry {
 
         public static final String TRIPS_FILE = "trips.txt";
+        public static final String TRIPS_TABLE_NAME = "trips";
 
         //public static final String _ID = "_id";
         public static final String TRIPS_TABLE_NAME = "trips";
@@ -33,7 +34,7 @@ public class GtfsContract {
                 ROUTE_ID + "," + SERVICE_ID + "," + TRIP_ID + "," + TRIP_HEADSIGN + ","
                         + DIRECTION_ID + "," + SHAPE_ID;
 
-        public static final String CREATE_TABLE_TRIPS = "CREATE TABLE " +
+        public static final String TRIPS_CREATE_TABLE = "CREATE TABLE " +
                 TRIPS_TABLE_NAME + " (" +
                 //TripsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 TripsEntry.ROUTE_ID + " TEXT NOT NULL, " +
@@ -45,12 +46,11 @@ public class GtfsContract {
                 "); ";
 
         public static final String[] TRIPS = {CREATE_TABLE_TRIPS, TRIPS_FILE, TRIPS_TABLE_NAME,
-                TRIPS_COLUMNS};
-    }
 
     public static final class StopTimesEntry {
 
-        public static final String STOP_TIMES_FILE = "trips.txt";
+        public static final String STOP_TIMES_FILE = "stop_times.txt";
+        public static final String STOP_TIMES_TABLE_NAME = "stop_times";
 
         //public static final String _ID = "_id";
         public static final String STOP_TIMES_TABLE_NAME = "stop_times";
@@ -68,13 +68,13 @@ public class GtfsContract {
                 TRIP_ID + "," + ARRIVAL_TIME + "," + DEPARTURE_TIME + "," + STOP_ID + ","
                         + STOP_SEQUENCE;
 
-        public static final String CREATE_TABLE_STOP_TIMES = "CREATE TABLE " +
+        public static final String STOP_TIMES_CREATE_TABLE = "CREATE TABLE " +
                 STOP_TIMES_TABLE_NAME + " (" +
                 //StopTimesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 StopTimesEntry.TRIP_ID + " TEXT NOT NULL, " +
                 StopTimesEntry.ARRIVAL_TIME + " TEXT NOT NULL, " +
                 StopTimesEntry.DEPARTURE_TIME + " TEXT NOT NULL, " +
-                StopTimesEntry.STOP_ID + " TEXT NOT NULL" +
+                StopTimesEntry.STOP_ID + " TEXT NOT NULL, " +
                 StopTimesEntry.STOP_SEQUENCE + " TEXT NOT NULL" +
                 "); ";
 
@@ -84,7 +84,8 @@ public class GtfsContract {
 
     public static final class FrequenciesEntry {
 
-        public static final String FREQUENCIES_FILE = "trips.txt";
+        public static final String FREQUENCIES_FILE = "frequencies.txt";
+        public static final String FREQUENCIES_TABLE_NAME = "frequencies";
 
         //public static final String _ID = "_id";
         public static final String FREQUENCIES_TABLE_NAME = "frequencies";
@@ -100,7 +101,7 @@ public class GtfsContract {
         public static final String FREQUENCIES_COLUMNS = //_ID + "," +
                 TRIP_ID + "," + START_TIME + "," + END_TIME + "," + HEADWAY_SECS;
 
-        public static final String CREATE_TABLE_FREQUENCIES = "CREATE TABLE " +
+        public static final String FREQUENCIES_CREATE_TABLE = "CREATE TABLE " +
                 FREQUENCIES_TABLE_NAME + " (" +
                 //FrequenciesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 FrequenciesEntry.TRIP_ID + " TEXT NOT NULL, " +
