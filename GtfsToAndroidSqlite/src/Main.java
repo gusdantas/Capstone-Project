@@ -15,8 +15,8 @@ public class Main {
         String location = "C:\\db\\gusdantas\\";
         createNewDatabase("gtfs.db");
         InsertApp app = new InsertApp();
-        createNewTable(CREATE_TABLE_METADATA);
-        app.insertMetadata();
+        //createNewTable(CREATE_TABLE_METADATA);
+        //app.insertMetadata();
 
         for(String[] table : TABLES) {
             createNewTable(table[0]);
@@ -33,7 +33,6 @@ public class Main {
                     while ((line = br.readLine()) != null) {
                         // process the line.
                         line = i + "," + line;
-
                         stmt.executeUpdate(app.insert(table[2], table[3], line));
                         i++;
                     }

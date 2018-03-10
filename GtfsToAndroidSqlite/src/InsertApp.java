@@ -27,13 +27,7 @@ public class InsertApp {
             stringBuilder.append(values[i]).append(",");
         }
         stringBuilder.append(values[values.length-1]).append(")");
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(stringBuilder.toString())) {
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        return stringBuilder.toString();
     }
 
     public void insertMetadata() {

@@ -20,7 +20,7 @@ import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.T
  */
 
 public class GtfsContentProvider extends ContentProvider {
-    private GtfsDbHelper mGtfsDbHelper;
+    private GtfsDbHelper2 mGtfsDbHelper;
 
     public static final int TRIPS = 100;
     public static final int TRIPS_WITH_ID = 101;
@@ -34,7 +34,7 @@ public class GtfsContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        mGtfsDbHelper = new GtfsDbHelper(context);
+        mGtfsDbHelper = new GtfsDbHelper2(context);
         return true;
     }
 
