@@ -11,16 +11,16 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_TABLE_NAME;
-import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_TABLE_NAME;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_TABLE_NAME;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.FrequenciesEntry.FREQUENCIES_TABLE_NAME;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.StopTimesEntry.STOP_TIMES_TABLE_NAME;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIPS_TABLE_NAME;
 
 /**
  * Created by gustavo.hidalgo on 18/02/23.
  */
 
 public class GtfsContentProvider extends ContentProvider {
-    private GtfsDbHelper2 mGtfsDbHelper;
+    private GtfsDbHelper mGtfsDbHelper;
 
     public static final int TRIPS = 100;
     public static final int TRIPS_WITH_ID = 101;
@@ -34,7 +34,7 @@ public class GtfsContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        mGtfsDbHelper = new GtfsDbHelper2(context);
+        mGtfsDbHelper = new GtfsDbHelper(context);
         return true;
     }
 
@@ -97,7 +97,7 @@ public class GtfsContentProvider extends ContentProvider {
                 long tripsId = db.insert(TRIPS_TABLE_NAME, null, values);
                 if ( tripsId > 0 ) {
                     returnUri = ContentUris.withAppendedId(
-                            TripsContract.TripsEntry.TRIPS_CONTENT_URI, tripsId);
+                            GtfsContract.TripsEntry.TRIPS_CONTENT_URI, tripsId);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -106,7 +106,7 @@ public class GtfsContentProvider extends ContentProvider {
                 long stopTimesId = db.insert(STOP_TIMES_TABLE_NAME, null, values);
                 if ( stopTimesId > 0 ) {
                     returnUri = ContentUris.withAppendedId(
-                            StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI, stopTimesId);
+                            GtfsContract.StopTimesEntry.STOP_TIMES_CONTENT_URI, stopTimesId);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -115,7 +115,7 @@ public class GtfsContentProvider extends ContentProvider {
                 long frequenciesId = db.insert(FREQUENCIES_TABLE_NAME, null, values);
                 if ( frequenciesId > 0 ) {
                     returnUri = ContentUris.withAppendedId(
-                            FrequenciesContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI, frequenciesId);
+                            GtfsContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI, frequenciesId);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -164,18 +164,18 @@ public class GtfsContentProvider extends ContentProvider {
     public static UriMatcher buildUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        uriMatcher.addURI(TripsContract.AUTHORITY,
-                TripsContract.PATH_TRIPS, TRIPS);
-        uriMatcher.addURI(TripsContract.AUTHORITY,
-                TripsContract.PATH_TRIPS + "/#", TRIPS_WITH_ID);
-        uriMatcher.addURI(StopTimesContract.AUTHORITY,
-                StopTimesContract.PATH_STOP_TIMES, STOP_TIMES);
-        uriMatcher.addURI(StopTimesContract.AUTHORITY,
-                StopTimesContract.PATH_STOP_TIMES + "/#", STOP_TIMES_WITH_ID);
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY,
-                FrequenciesContract.PATH_FREQUENCIES, FREQUENCIES);
-        uriMatcher.addURI(FrequenciesContract.AUTHORITY,
-                FrequenciesContract.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.TripsEntry.PATH_TRIPS, TRIPS);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.TripsEntry.PATH_TRIPS + "/#", TRIPS_WITH_ID);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.StopTimesEntry.PATH_STOP_TIMES, STOP_TIMES);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.StopTimesEntry.PATH_STOP_TIMES + "/#", STOP_TIMES_WITH_ID);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.FrequenciesEntry.PATH_FREQUENCIES, FREQUENCIES);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.FrequenciesEntry.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
         return uriMatcher;
     }
 }

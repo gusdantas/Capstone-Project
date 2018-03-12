@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/GtfsToAndroidSqlite.iml" filepath="$PROJECT_DIR$/GtfsToAndroidSqlite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/GtfsToAndroidSqlite.iml" filepath="$PROJECT_DIR$/.idea/GtfsToAndroidSqlite.iml" />
     </modules>
   </component>
 </project>

@@ -1,11 +1,11 @@
 package com.gustavohidalgo.quaiscalingudum.views;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,23 +24,20 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.data.DBHelper;
-import com.gustavohidalgo.quaiscalingudum.utils.GtfsHelper;
 import com.squareup.picasso.Picasso;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +51,9 @@ public class MainActivity extends AppCompatActivity
     ImageView mProfilePictureIv;
     TextView mProfileEmailTv;
     TextView mProfileNameTv;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     private static final int RC_SIGN_IN = 123;
 
@@ -89,20 +89,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-        Toast.makeText(this, "Building trips db", Toast.LENGTH_SHORT).show();
-//        GtfsHelper.buildTrips(this);
-//        Toast.makeText(this, "Building stop times db", Toast.LENGTH_SHORT).show();
-//        GtfsHelper.buildStopTimes(this);
-//        Toast.makeText(this, "Building frequencies db", Toast.LENGTH_SHORT).show();
-//        GtfsHelper.buildFrequencies(this);
-        DBHelper dbImporterExporter = new DBHelper(this, "gtfs.db");
-//        try {
-//            dbImporterExporter.importDataBaseFromAssets();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        dbImporterExporter.isDataBaseExists();
-        Toast.makeText(this, "Db built", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -194,6 +180,8 @@ public class MainActivity extends AppCompatActivity
 
     private void goHome() {
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
+        // Write a message to the database
+
 
     }
 
@@ -210,6 +198,26 @@ public class MainActivity extends AppCompatActivity
             mProfileEmailTv.setText(sUser.getEmail());
 
         }
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("message");
+        // Read from the database
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                Log.d("gugu", "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("gugu", "Failed to read value.", error.toException());
+            }
+        });
+
+        //databaseReference.setValue("Hello, World!");
     }
 
     private void setupDrawerHeader() {

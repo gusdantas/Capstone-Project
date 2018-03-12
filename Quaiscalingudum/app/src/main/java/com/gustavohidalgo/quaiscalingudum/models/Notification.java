@@ -21,7 +21,7 @@ public class Notification implements Parcelable {
     public static final byte THURSDAY  = 0b0000100;
     public static final byte FRIDAY    = 0b0000010;
     public static final byte SATURDAY  = 0b0000001;
-    private int mDaysOfWeek;
+    private int mDaysOfWeek, mMinuteOfHour, mHourOfDay, mDayOfMonth;
     private DateTime mDateTime;
     private String[] mLine, mStop;
     private boolean mIsWeekly;
@@ -54,6 +54,8 @@ public class Notification implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mDaysOfWeek);
     }
+
+
 
     public void setDayOfWeek(int dayOfWeek) {
         this.mDaysOfWeek |= dayOfWeek;

@@ -1,8 +1,12 @@
 package data;
 
 public class GtfsContract {
-    public static final String[][] TABLES = {TripsEntry.TRIPS, StopTimesEntry.STOP_TIMES,
-            FrequenciesEntry.FREQUENCIES};
+    public static final int TABLE_CREATE = 0;
+    public static final int TABLE_FILE = 1;
+    public static final int TABLE_NAME = 2;
+    public static final int TABLE_COLUMNS = 3;
+    public static final String[][] TABLES = {/*TripsEntry.TRIPS, StopTimesEntry.STOP_TIMES,
+            FrequenciesEntry.FREQUENCIES, */StopsEntry.STOPS};
 
     public static final class MetadataEntry {
         public static final String METADATA_TABLE_NAME = "android_metadata";
@@ -44,7 +48,8 @@ public class GtfsContract {
                 TripsEntry.SHAPE_ID + " TEXT NOT NULL" +
                 "); ";
 
-        public static final String[] TRIPS = {TRIPS_CREATE_TABLE, TRIPS_FILE, TRIPS_TABLE_NAME, TRIPS_COLUMNS};
+        public static final String[] TRIPS = {TRIPS_CREATE_TABLE, TRIPS_FILE, TRIPS_TABLE_NAME,
+                TRIPS_COLUMNS};
     }
 
     public static final class StopTimesEntry {
@@ -110,5 +115,38 @@ public class GtfsContract {
 
         public static final String[] FREQUENCIES = {FREQUENCIES_CREATE_TABLE, FREQUENCIES_FILE,
                 FREQUENCIES_TABLE_NAME, FREQUENCIES_COLUMNS};
+    }
+
+    public static final class StopsEntry {
+
+        public static final String STOPS_FILE = "stops.txt";
+        public static final String STOPS_TABLE_NAME = "stops";
+
+        public static final String _ID = "_id";
+        public static final String STOP_ID = "stop_id";
+        public static final String STOP_NAME = "stop_name";
+        public static final String STOP_DESC = "stop_desc";
+        public static final String STOP_LAT = "stop_lat";
+        public static final String STOP_LON = "stop_lon";
+
+//        public static final String[] FREQUENCIES_COLUMNS = {
+//                TRIP_ID, START_TIME, END_TIME, HEADWAY_SECS
+//        };
+
+        public static final String STOPS_COLUMNS = _ID + "," +
+                STOP_ID + "," + STOP_NAME + "," + STOP_DESC + "," + STOP_LAT + "," + STOP_LON;
+
+        public static final String STOPS_CREATE_TABLE = "CREATE TABLE " +
+                STOPS_TABLE_NAME + " (" +
+                StopsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                StopsEntry.STOP_ID + " TEXT NOT NULL, " +
+                StopsEntry.STOP_NAME + " TEXT NOT NULL, " +
+                StopsEntry.STOP_DESC + " TEXT NOT NULL, " +
+                StopsEntry.STOP_LAT + " TEXT NOT NULL, " +
+                StopsEntry.STOP_LON + " TEXT NOT NULL" +
+                "); ";
+
+        public static final String[] STOPS = {STOPS_CREATE_TABLE, STOPS_FILE,
+                STOPS_TABLE_NAME, STOPS_COLUMNS};
     }
 }

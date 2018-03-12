@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_COLUMNS;
-import static com.gustavohidalgo.quaiscalingudum.data.FrequenciesContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI;
-import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_COLUMNS;
-import static com.gustavohidalgo.quaiscalingudum.data.StopTimesContract.StopTimesEntry.STOP_TIMES_CONTENT_URI;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_COLUMNS;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIPS_CONTENT_URI;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.FrequenciesEntry.FREQUENCIES_COLUMNS;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.StopTimesEntry.STOP_TIMES_COLUMNS;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.StopTimesEntry.STOP_TIMES_CONTENT_URI;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIPS_COLUMNS;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIPS_CONTENT_URI;
 
 /**
  * Created by gustavo.hidalgo on 18/02/20.

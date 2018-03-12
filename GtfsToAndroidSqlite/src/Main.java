@@ -6,8 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 
+import static data.GtfsContract.*;
 import static data.GtfsContract.MetadataEntry.CREATE_TABLE_METADATA;
-import static data.GtfsContract.TABLES;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,13 +18,17 @@ public class Main {
         //createNewTable(CREATE_TABLE_METADATA);
         //app.insertMetadata();
 
-        for(String[] table : TABLES) {
-            createNewTable(table[0]);
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\db\\gtfs.db");
+             Statement stmt = conn.createStatement()) {
 
-            Path path = Paths.get(location + table[1]);
+            for(String[] table : TABLES) {
+                String tableName = table[TABLE_NAME];
+                String tableColumns = table[TABLE_COLUMNS];
+                System.out.println("Creating table " + tableName);
+                createNewTable(table[TABLE_CREATE]);
+                System.out.println("Table " + tableName + " created.\r\nWriting " + tableName);
 
-            try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\db\\gtfs.db");
-                 Statement stmt = conn.createStatement()) {
+                Path path = Paths.get(location + table[TABLE_FILE]);
 
                 try (BufferedReader br = new BufferedReader(new FileReader(path.toFile()))) {
                     String line;
@@ -33,18 +37,20 @@ public class Main {
                     while ((line = br.readLine()) != null) {
                         // process the line.
                         line = i + "," + line;
-                        stmt.executeUpdate(app.insert(table[2], table[3], line));
+                        stmt.executeUpdate(app.insert(tableName, tableColumns, line));
                         i++;
                     }
+                    System.out.println("Written " + tableName);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
             }
+
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -58,7 +64,7 @@ public class Main {
                 System.out.println("The driver name is " + meta.getDriverName());
                 System.out.println("A new database has been created.");
             }
-
+            conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -72,6 +78,7 @@ public class Main {
              Statement stmt = conn.createStatement()) {
             // create a new table
             stmt.execute(sql);
+            conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

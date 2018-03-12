@@ -2,7 +2,6 @@ package com.gustavohidalgo.quaiscalingudum.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.data.TripsContract;
+import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
 
 import butterknife.BindView;
@@ -41,8 +40,8 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
     @Override
     public void onBindViewHolder(LineViewHolder holder, int position) {
         mCursor.moveToPosition(position);
-        String code = mCursor.getString(mCursor.getColumnIndex(TripsContract.TripsEntry.ROUTE_ID));
-        String name = mCursor.getString(mCursor.getColumnIndex(TripsContract.TripsEntry.TRIP_HEADSIGN));
+        String code = mCursor.getString(mCursor.getColumnIndex(GtfsContract.TripsEntry.ROUTE_ID));
+        String name = mCursor.getString(mCursor.getColumnIndex(GtfsContract.TripsEntry.TRIP_HEADSIGN));
         holder.mLineCodeTV.setText(code);
         holder.mLineNameTV.setText(name);
     }

@@ -15,27 +15,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
-import com.gustavohidalgo.quaiscalingudum.data.TripsContract;
+import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.DIRECTION_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.ROUTE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.SERVICE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.SHAPE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIP_HEADSIGN;
-import static com.gustavohidalgo.quaiscalingudum.data.TripsContract.TripsEntry.TRIP_ID;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.DIRECTION_ID;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.ROUTE_ID;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.SERVICE_ID;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.SHAPE_ID;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIP_HEADSIGN;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIP_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -171,17 +168,17 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         switch (id) {
             case ID_TRIPS_LOADER:
                 /* URI for all rows of weather data in our weather table */
-                Uri tripsQueryUri = TripsContract.TripsEntry.TRIPS_CONTENT_URI;
+                Uri tripsQueryUri = GtfsContract.TripsEntry.TRIPS_CONTENT_URI;
                 /* Sort order: Ascending by date */
-                String sortOrder = TripsContract.TripsEntry._ID + " ASC";
+                String sortOrder = GtfsContract.TripsEntry._ID + " ASC";
                 /*
                  * A SELECTION in SQL declares which rows you'd like to return. In our case, we
                  * want all weather data from today onwards that is stored in our weather table.
                  * We created a handy method to do that in our WeatherEntry class.
                  */
-                String selection = "(((" + TripsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
-                        + TripsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?)) AND ("
-                        + TripsContract.TripsEntry.SERVICE_ID + " LIKE ?))";
+                String selection = "(((" + GtfsContract.TripsEntry.ROUTE_ID + " LIKE ?) OR ("
+                        + GtfsContract.TripsEntry.TRIP_HEADSIGN + " LIKE ?)) AND ("
+                        + GtfsContract.TripsEntry.SERVICE_ID + " LIKE ?))";
                 String[] selectionArgs = new String[]{"%" + mLineQuery + "%",
                         "%" + mLineQuery + "%", "%" + mDaysQuery + "%"};
 

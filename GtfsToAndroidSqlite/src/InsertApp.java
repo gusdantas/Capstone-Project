@@ -21,7 +21,8 @@ public class InsertApp {
     public String insert(String table, String columns, String value) {
         String[] values = value.split(",");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("INSERT INTO ").append(table).append("(").append(columns).append(") VALUES(");
+        stringBuilder.append("INSERT INTO ").append(table).append("(")
+                .append(columns).append(") VALUES(");
 
         for (int i = 0; i < values.length - 1; i++) {
             stringBuilder.append(values[i]).append(",");
