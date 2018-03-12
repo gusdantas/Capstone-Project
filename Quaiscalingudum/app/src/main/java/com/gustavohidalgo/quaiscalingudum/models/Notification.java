@@ -21,7 +21,7 @@ public class Notification implements Parcelable {
     public static final byte THURSDAY  = 0b0000100;
     public static final byte FRIDAY    = 0b0000010;
     public static final byte SATURDAY  = 0b0000001;
-    private int mDaysOfWeek;
+    private int mDaysOfWeek, mMinuteOfHour, mHourOfDay, mDayOfMonth;
     private DateTime mDateTime;
     private String[] mLine, mStop;
     private boolean mIsWeekly;
@@ -55,6 +55,8 @@ public class Notification implements Parcelable {
         dest.writeInt(mDaysOfWeek);
     }
 
+
+
     public void setDayOfWeek(int dayOfWeek) {
         this.mDaysOfWeek |= dayOfWeek;
     }
@@ -67,33 +69,43 @@ public class Notification implements Parcelable {
         return mDaysOfWeek;
     }
 
-    public ArrayList<String> getServiceIds(){
-        ArrayList<String> serviceId = new ArrayList<>();
-        serviceId.add("USD");
+    public String getServiceIds(){
+        ArrayList<String> serviceIdd = new ArrayList<>();
+        serviceIdd.add("USD");
+        StringBuilder serviceId = new StringBuilder();
 
         if(mIsWeekly) {
             if ((mDaysOfWeek &= 0b0111110) > 0) {
-                serviceId.add("U__");
-                serviceId.add("U_D");
-                serviceId.add("US_");
+                serviceIdd.add("U__");
+                serviceIdd.add("U_D");
+                serviceIdd.add("US_");
+                serviceId.append("U");
+            } else {
+                serviceId.append("_");
             }
 
             if ((mDaysOfWeek &= 0b0000001) > 0) {
-                serviceId.add("_S_");
-                serviceId.add("_SD");
-                if(!serviceId.contains("US_")) {
-                    serviceId.add("US_");
+                serviceIdd.add("_S_");
+                serviceIdd.add("_SD");
+                if(!serviceIdd.contains("US_")) {
+                    serviceIdd.add("US_");
                 }
+                serviceId.append("S");
+            } else {
+                serviceId.append("_");
             }
 
             if ((mDaysOfWeek &= 0b1000000) > 0) {
-                serviceId.add("__D");
-                if(!serviceId.contains("_SD")) {
-                    serviceId.add("_SD");
+                serviceIdd.add("__D");
+                if(!serviceIdd.contains("_SD")) {
+                    serviceIdd.add("_SD");
                 }
-                if(!serviceId.contains("U_D")) {
-                    serviceId.add("U_D");
+                if(!serviceIdd.contains("U_D")) {
+                    serviceIdd.add("U_D");
                 }
+                serviceId.append("D");
+            } else {
+                serviceId.append("_");
             }
         } else {
             if (mDateTime.getDayOfWeek() == DateTimeConstants.MONDAY
@@ -101,21 +113,24 @@ public class Notification implements Parcelable {
                     || mDateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
                     || mDateTime.getDayOfWeek() == DateTimeConstants.THURSDAY
                     || mDateTime.getDayOfWeek() == DateTimeConstants.FRIDAY){
-                serviceId.add("U__");
-                serviceId.add("U_D");
-                serviceId.add("US_");
+                serviceIdd.add("U__");
+                serviceIdd.add("U_D");
+                serviceIdd.add("US_");
+                serviceId.append("U__");
             } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SATURDAY){
-                serviceId.add("_S_");
-                serviceId.add("_SD");
-                serviceId.add("US_");
+                serviceIdd.add("_S_");
+                serviceIdd.add("_SD");
+                serviceIdd.add("US_");
+                serviceId.append("_S_");
             } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SUNDAY){
-                serviceId.add("__D");
-                serviceId.add("_SD");
-                serviceId.add("U_D");
+                serviceIdd.add("__D");
+                serviceIdd.add("_SD");
+                serviceIdd.add("U_D");
+                serviceId.append("__D");
             }
         }
 
-        return serviceId;
+        return serviceId.toString();
     }
 
     public void setLine(String[] line){

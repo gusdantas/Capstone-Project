@@ -57,7 +57,6 @@ public class SetNotificationsFragment extends Fragment {
      * @param notification Parameter 1.
      * @return A new instance of fragment SetNotificationsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SetNotificationsFragment newInstance(Notification notification) {
         SetNotificationsFragment fragment = new SetNotificationsFragment();
         Bundle args = new Bundle();
@@ -80,10 +79,14 @@ public class SetNotificationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_notifications, container, false);
         ButterKnife.bind(this, view);
+        mLineNameTV.setText(mNotification.getLine()[3]);
+        mLineCodeTV.setText(mNotification.getLine()[0]);
+        String time = mNotification.getDateTime().getHourOfDay() + ":" +
+                mNotification.getDateTime().getMinuteOfHour();
+        mArrivalTime.setText(time);
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     @OnClick(R.id.next_finish_bt)
     public void onNextPressed() {
         getActivity().finish();

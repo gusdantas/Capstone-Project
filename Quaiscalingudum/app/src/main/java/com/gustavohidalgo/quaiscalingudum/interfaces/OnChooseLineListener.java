@@ -4,6 +4,8 @@ package com.gustavohidalgo.quaiscalingudum.interfaces;
  * Created by gustavo.hidalgo on 18/02/06.
  */
 
+import android.database.Cursor;
+
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
 /**

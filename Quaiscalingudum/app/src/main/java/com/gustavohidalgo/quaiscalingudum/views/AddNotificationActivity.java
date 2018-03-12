@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {
     private Notification mNotification;
-    private static ArrayList<String> sTrips, sStopTimes, sFrequencies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,15 +23,6 @@ public class AddNotificationActivity extends AppCompatActivity
         if(savedInstanceState == null) {
             Intent intent = getIntent();
             mNotification = intent.getParcelableExtra("old_notification");
-            if (sTrips == null){
-                sTrips = FileHelper.getLines(R.raw.trips, this);
-            }
-            if (sStopTimes == null){
-                sStopTimes = FileHelper.getLines(R.raw.stop_times, this);
-            }
-            if (sFrequencies == null){
-                sFrequencies = FileHelper.getLines(R.raw.frequencies, this);
-            }
 
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
@@ -56,7 +46,7 @@ public class AddNotificationActivity extends AppCompatActivity
 
     @Override
     public void toPickLine(Notification notification) {
-        PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification, sTrips);
+        PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, pickLineFragment, "pickline").commit();
@@ -64,8 +54,7 @@ public class AddNotificationActivity extends AppCompatActivity
 
     @Override
     public void toDetails(Notification notification) {
-        DetailsFragment detailsFragment = DetailsFragment
-                .newInstance(notification, sStopTimes, sFrequencies);
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, detailsFragment, "details").commit();
