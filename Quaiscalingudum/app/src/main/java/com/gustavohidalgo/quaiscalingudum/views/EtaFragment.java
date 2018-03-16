@@ -35,13 +35,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.FRIDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.MONDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.SATURDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.SUNDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.THURSDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.TUESDAY;
-import static com.gustavohidalgo.quaiscalingudum.models.Notification.WEDNESDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 /**
  * A simple {@link Fragment} subclass.

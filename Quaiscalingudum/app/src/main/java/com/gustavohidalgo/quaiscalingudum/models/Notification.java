@@ -14,16 +14,15 @@ import java.util.Date;
  */
 
 public class Notification implements Parcelable {
-    public static final byte SUNDAY    = 0b1000000;
-    public static final byte MONDAY    = 0b0100000;
-    public static final byte TUESDAY   = 0b0010000;
-    public static final byte WEDNESDAY = 0b0001000;
-    public static final byte THURSDAY  = 0b0000100;
-    public static final byte FRIDAY    = 0b0000010;
-    public static final byte SATURDAY  = 0b0000001;
-    private int mDaysOfWeek, mMinuteOfHour, mHourOfDay, mDayOfMonth;
-    private DateTime mDateTime;
-    private String[] mLine, mStop;
+
+    private int mDaysOfWeek;
+    private int mMinuteOfHour;
+    private int mHourOfDay;
+    private int mDayOfMonth;
+    private int mMonthOfYear;
+    private int mYear;
+    private String[] mLine;
+    private String[] mStop;
     private boolean mIsWeekly;
 
     public Notification() {
@@ -54,8 +53,6 @@ public class Notification implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mDaysOfWeek);
     }
-
-
 
     public void setDayOfWeek(int dayOfWeek) {
         this.mDaysOfWeek |= dayOfWeek;
@@ -108,21 +105,23 @@ public class Notification implements Parcelable {
                 serviceId.append("_");
             }
         } else {
-            if (mDateTime.getDayOfWeek() == DateTimeConstants.MONDAY
-                    || mDateTime.getDayOfWeek() == DateTimeConstants.TUESDAY
-                    || mDateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
-                    || mDateTime.getDayOfWeek() == DateTimeConstants.THURSDAY
-                    || mDateTime.getDayOfWeek() == DateTimeConstants.FRIDAY){
+            DateTime dateTime = new DateTime(mYear, mMonthOfYear, mDayOfMonth, mHourOfDay,
+                    mMinuteOfHour);
+            if (dateTime.getDayOfWeek() == DateTimeConstants.MONDAY
+                    || dateTime.getDayOfWeek() == DateTimeConstants.TUESDAY
+                    || dateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
+                    || dateTime.getDayOfWeek() == DateTimeConstants.THURSDAY
+                    || dateTime.getDayOfWeek() == DateTimeConstants.FRIDAY){
                 serviceIdd.add("U__");
                 serviceIdd.add("U_D");
                 serviceIdd.add("US_");
                 serviceId.append("U__");
-            } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SATURDAY){
+            } else if (dateTime.getDayOfWeek() == DateTimeConstants.SATURDAY){
                 serviceIdd.add("_S_");
                 serviceIdd.add("_SD");
                 serviceIdd.add("US_");
                 serviceId.append("_S_");
-            } else if (mDateTime.getDayOfWeek() == DateTimeConstants.SUNDAY){
+            } else if (dateTime.getDayOfWeek() == DateTimeConstants.SUNDAY){
                 serviceIdd.add("__D");
                 serviceIdd.add("_SD");
                 serviceIdd.add("U_D");
@@ -150,11 +149,15 @@ public class Notification implements Parcelable {
     }
 
     public DateTime getDateTime() {
-        return mDateTime;
+        return new DateTime(mYear, mMonthOfYear, mDayOfMonth, mHourOfDay, mMinuteOfHour);
     }
 
     public void setDateTime(DateTime dateTime) {
-        this.mDateTime = dateTime;
+        setYear(dateTime.getYear());
+        setMonthOfYear(dateTime.getMonthOfYear());
+        setDayOfMonth(dateTime.getDayOfMonth());
+        setHourOfDay(dateTime.getHourOfDay());
+        setMinuteOfHour(dateTime.getMinuteOfHour());
     }
 
     public void setStop(String[] stop){
@@ -163,5 +166,45 @@ public class Notification implements Parcelable {
 
     public String[] getStop(){
         return mStop;
+    }
+
+    public int getMinuteOfHour() {
+        return mMinuteOfHour;
+    }
+
+    public void setMinuteOfHour(int minuteOfHour) {
+        this.mMinuteOfHour = minuteOfHour;
+    }
+
+    public int getHourOfDay() {
+        return mHourOfDay;
+    }
+
+    public void setHourOfDay(int hourOfDay) {
+        this.mHourOfDay = hourOfDay;
+    }
+
+    public int getDayOfMonth() {
+        return mDayOfMonth;
+    }
+
+    public void setDayOfMonth(int dayOfMonth) {
+        this.mDayOfMonth = dayOfMonth;
+    }
+
+    public int getMonthOfYear() {
+        return mMonthOfYear;
+    }
+
+    public void setMonthOfYear(int monthOfYear) {
+        this.mMonthOfYear = monthOfYear;
+    }
+
+    public int getYear() {
+        return mYear;
+    }
+
+    public void setYear(int year) {
+        this.mYear = year;
     }
 }
