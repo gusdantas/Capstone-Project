@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -17,7 +18,6 @@ import android.widget.RadioGroup;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
@@ -28,11 +28,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,13 +44,12 @@ import butterknife.OnClick;
  */
 public class DetailsFragment extends Fragment implements AdapterView.OnItemSelectedListener,
         RadioGroup.OnCheckedChangeListener, LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String NOTIFICATION = "notification";
     private static final int ID_FREQUENCIES_LOADER = 11;
     private static final int ID_STOP_TIMES_LOADER = 12;
 
     private Notification mNotification;
     private String[] mLine;
-    private Cursor mStopsFiltered, mFrequenciesFiltered;
+    private Cursor mStopTimesFiltered, mFrequenciesFiltered;
     private DateTime mDateTime;
     private String mTripId = "";
     SimpleCursorAdapter mSelectStopAdapter;
@@ -103,13 +102,13 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
-        mLineCodeTV.setText(mLine[0].replaceAll("\"", ""));
-        mLineNameTV.setText(mLine[3].replaceAll("\"", ""));
+        mLineCodeTV.setText(mLine[TRIPS_ROUTE_ID].replaceAll("\"", ""));
+        mLineNameTV.setText(mLine[TRIPS_TRIP_HEADSIGN].replaceAll("\"", ""));
         String[] strings = {GtfsContract.StopTimesEntry.STOP_ID,
                 GtfsContract.StopTimesEntry.STOP_SEQUENCE};
         int[] ints = {android.R.id.text1, android.R.id.text1};
@@ -160,29 +159,33 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        mStopsFiltered.moveToFirst();
-        String[] terminalDepartureStop = {mStopsFiltered.getString(1),
-                mStopsFiltered.getString(2),
-                mStopsFiltered.getString(3),
-                mStopsFiltered.getString(4),
-                mStopsFiltered.getString(5)};
+        mStopTimesFiltered.moveToFirst();
+        String[] terminalDepartureStop = {
+                mStopTimesFiltered.getString(STOP_TIMES__ID),
+                mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
+                mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
+                mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
+                mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
+                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
 
-        mStopsFiltered.moveToPosition(position);
-        String[] desiredStop = {mStopsFiltered.getString(1),
-                mStopsFiltered.getString(2),
-                mStopsFiltered.getString(3),
-                mStopsFiltered.getString(4),
-                mStopsFiltered.getString(5)};
+        mStopTimesFiltered.moveToPosition(position);
+        String[] desiredStop = {
+                mStopTimesFiltered.getString(STOP_TIMES__ID),
+                mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
+                mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
+                mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
+                mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
+                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
         mNotification.setStop(desiredStop);
 
         // time get by the bus from start to the choosen stop
-        int[] refSaidaTerminalTabela = stringToTime(terminalDepartureStop);
+        int[] refSaidaTerminalTabela = stringToTime(terminalDepartureStop[STOP_TIMES_DEPARTURE_TIME]);
         DateTime refSaidaTerminal = new DateTime(0, 1, 1, 0,
-                refSaidaTerminalTabela[1], 0);
+                refSaidaTerminalTabela[MINUTE], 0);
 
-        int[] refChegadaPontoTabela = stringToTime(mNotification.getStop());
+        int[] refChegadaPontoTabela = stringToTime(mNotification.getStop()[STOP_TIMES_ARRIVAL_TIME]);
         DateTime refChegadaPonto = new DateTime(0, 1, 1,
-                (refChegadaPontoTabela[0] - refSaidaTerminalTabela[0]), refChegadaPontoTabela[1],
+                (refChegadaPontoTabela[HOUR] - refSaidaTerminalTabela[HOUR]), refChegadaPontoTabela[MINUTE],
                 0);
 
         DateTime tempoViagem = new DateTime(refChegadaPonto.getMillis() - refSaidaTerminal.getMillis());
@@ -224,9 +227,9 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
 
     }
 
-    private int[] stringToTime(String[] strings){
-        int hour = Integer.parseInt(strings[1].replaceAll("\"", "").split(":")[0]);
-        int minute = Integer.parseInt(strings[1].replaceAll("\"", "").split(":")[1]);
+    private int[] stringToTime(String time){
+        int hour = Integer.parseInt(time.replaceAll("\"", "").split(":")[HOUR]);
+        int minute = Integer.parseInt(time.replaceAll("\"", "").split(":")[MINUTE]);
         return new int[]{hour, minute};
     }
 
@@ -237,7 +240,8 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         mDateTime = new DateTime(mNotification.getDateTime().getYear(),
                 mNotification.getDateTime().getMonthOfYear(),
                 mNotification.getDateTime().getDayOfMonth(),
-                Integer.parseInt(choosenTime[0]), Integer.parseInt(choosenTime[0]),0);
+                Integer.parseInt(choosenTime[HOUR]),
+                Integer.parseInt(choosenTime[MINUTE]),0);
     }
 
     @Override
@@ -283,7 +287,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToFirst();
         if (loader.getId() == ID_STOP_TIMES_LOADER) {
-            mStopsFiltered = data;
+            mStopTimesFiltered = data;
             mSelectStopAdapter.swapCursor(data);
             mSelectStopAdapter.notifyDataSetChanged();
         } else {

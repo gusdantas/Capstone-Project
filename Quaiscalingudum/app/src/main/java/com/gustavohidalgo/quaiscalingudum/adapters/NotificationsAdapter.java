@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class NotificationsAdapter extends
     private ArrayList<String> mLinesFiltered, mLines;
     private static String[] mLineChosen;
 
-    private static OnChooseLineListener mChooseLineListener;
+    private static OnTripSelectListener mChooseLineListener;
 
     public NotificationsAdapter(){
 
@@ -61,7 +61,7 @@ public class NotificationsAdapter extends
         notifyDataSetChanged();
     }
 
-    public void setChooseLineListener(OnChooseLineListener chooseLineListener){
+    public void setChooseLineListener(OnTripSelectListener chooseLineListener){
         mChooseLineListener = chooseLineListener;
     }
 
@@ -98,7 +98,7 @@ public class NotificationsAdapter extends
 
         @Override
         public void onClick(View v) {
-            mChooseLineListener.lineChosen(mLineChosen);
+            mChooseLineListener.tripSelected(mLineChosen);
         }
     }
 }

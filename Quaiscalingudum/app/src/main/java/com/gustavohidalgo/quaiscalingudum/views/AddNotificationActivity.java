@@ -7,9 +7,8 @@ import android.os.Bundle;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
-import com.gustavohidalgo.quaiscalingudum.utils.FileHelper;
 
-import java.util.ArrayList;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {
@@ -22,7 +21,7 @@ public class AddNotificationActivity extends AppCompatActivity
 
         if(savedInstanceState == null) {
             Intent intent = getIntent();
-            mNotification = intent.getParcelableExtra("old_notification");
+            mNotification = intent.getParcelableExtra(OLD_NOTIFICATION);
 
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
@@ -41,7 +40,7 @@ public class AddNotificationActivity extends AppCompatActivity
         EtaFragment etaFragment = EtaFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_add_notification, etaFragment, "eta").commit();
+                .replace(R.id.activity_add_notification, etaFragment, ETA).commit();
     }
 
     @Override
@@ -49,7 +48,7 @@ public class AddNotificationActivity extends AppCompatActivity
         PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_add_notification, pickLineFragment, "pickline").commit();
+                .replace(R.id.activity_add_notification, pickLineFragment, PICK_LINE).commit();
     }
 
     @Override
@@ -57,7 +56,7 @@ public class AddNotificationActivity extends AppCompatActivity
         DetailsFragment detailsFragment = DetailsFragment.newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_add_notification, detailsFragment, "details").commit();
+                .replace(R.id.activity_add_notification, detailsFragment, DETAILS).commit();
     }
 
     @Override
@@ -66,7 +65,7 @@ public class AddNotificationActivity extends AppCompatActivity
                 .newInstance(notification);
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_add_notification, setNotificationsFragment, "notifications")
+                .replace(R.id.activity_add_notification, setNotificationsFragment, SET_NOTIFICATIONS)
                 .commit();
     }
 }

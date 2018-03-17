@@ -45,37 +45,27 @@ public class GtfsContentProvider extends ContentProvider {
         final SQLiteDatabase db = mGtfsDbHelper.getReadableDatabase();
         int match = sUriMatcher.match(uri);
         Cursor retCursor;
+        String tableName;
         switch (match) {
             case TRIPS:
-                retCursor =  db.query(TRIPS_TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                tableName = TRIPS_TABLE_NAME;
                 break;
             case STOP_TIMES:
-                retCursor =  db.query(STOP_TIMES_TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                tableName = STOP_TIMES_TABLE_NAME;
                 break;
             case FREQUENCIES:
-                retCursor =  db.query(FREQUENCIES_TABLE_NAME,
-                        projection,
-                        selection,
-                        selectionArgs,
-                        null,
-                        null,
-                        sortOrder);
+                tableName = FREQUENCIES_TABLE_NAME;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+        retCursor =  db.query(tableName,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
         retCursor.setNotificationUri(getContext().getContentResolver(), uri);
         return retCursor;
     }

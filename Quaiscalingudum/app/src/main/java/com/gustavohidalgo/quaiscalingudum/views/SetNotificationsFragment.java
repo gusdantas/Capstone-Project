@@ -2,6 +2,7 @@ package com.gustavohidalgo.quaiscalingudum.views;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -28,7 +33,6 @@ import butterknife.OnClick;
  * create an instance of this fragment.
  */
 public class SetNotificationsFragment extends Fragment {
-    private static final String NOTIFICATION = "notification";
 
     @BindView(R.id.line_code_details_tv)
     TextView mLineCodeTV;
@@ -42,7 +46,6 @@ public class SetNotificationsFragment extends Fragment {
     RecyclerView mNotificationsRV;
 
     private Notification mNotification;
-
 
     private OnEditNotificationListener mListener;
 
@@ -74,13 +77,13 @@ public class SetNotificationsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_notifications, container, false);
         ButterKnife.bind(this, view);
-        mLineNameTV.setText(mNotification.getLine()[3]);
-        mLineCodeTV.setText(mNotification.getLine()[0]);
+        mLineNameTV.setText(mNotification.getLine()[TRIPS_TRIP_HEADSIGN]);
+        mLineCodeTV.setText(mNotification.getLine()[TRIPS_ROUTE_ID]);
         String time = mNotification.getDateTime().getHourOfDay() + ":" +
                 mNotification.getDateTime().getMinuteOfHour();
         mArrivalTime.setText(time);

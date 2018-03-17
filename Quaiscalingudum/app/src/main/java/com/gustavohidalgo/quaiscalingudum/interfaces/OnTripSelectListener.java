@@ -18,6 +18,6 @@ import com.gustavohidalgo.quaiscalingudum.models.Notification;
  * "http://developer.android.com/training/basics/fragments/communicating.html"
  * >Communicating with Other Fragments</a> for more information.
  */
-public interface OnChooseLineListener {
-    void lineChosen(String[] line);
+public interface OnTripSelectListener {
+    void tripSelected(String[] line);
 }

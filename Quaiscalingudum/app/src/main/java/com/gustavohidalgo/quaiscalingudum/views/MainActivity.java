@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
     @BindView(R.id.nav_view) NavigationView mNavigationView;
+    @BindView(R.id.test_tv) TextView testTv;
     ImageView mProfilePictureIv;
     TextView mProfileEmailTv;
     TextView mProfileNameTv;
@@ -181,8 +182,6 @@ public class MainActivity extends AppCompatActivity
     private void goHome() {
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
         // Write a message to the database
-
-
     }
 
     private void updateUserInformationUI() {
@@ -207,17 +206,20 @@ public class MainActivity extends AppCompatActivity
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 String value = dataSnapshot.getValue(String.class);
+                testTv.setText(value);
                 Log.d("gugu", "Value is: " + value);
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
+                String text = "Failed to read value.";
+                testTv.setText(text);
                 Log.w("gugu", "Failed to read value.", error.toException());
             }
         });
 
-        //databaseReference.setValue("Hello, World!");
+        databaseReference.setValue("Novo teste!");
     }
 
     private void setupDrawerHeader() {

@@ -46,7 +46,6 @@ import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
  * create an instance of this fragment.
  */
 public class EtaFragment extends Fragment implements OnSetDateListener {
-    private static final String NOTIFICATION = "notification";
 
     private Notification mNotification;
     private DateTime mDateTime;

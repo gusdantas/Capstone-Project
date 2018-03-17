@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
-import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
@@ -27,12 +27,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.DIRECTION_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.ROUTE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.SERVICE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.SHAPE_ID;
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIP_HEADSIGN;
-import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIP_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,12 +40,11 @@ import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TR
  * create an instance of this fragment.
  */
 public class PickLineFragment extends Fragment implements SearchView.OnQueryTextListener,
-        OnChooseLineListener, LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String NOTIFICATION = "notification";
+        OnTripSelectListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final String[] PICK_LINE_PROJECTION = {
-            ROUTE_ID, SERVICE_ID, TRIP_ID, TRIP_HEADSIGN, DIRECTION_ID, SHAPE_ID
-    };
+//    public static final String[] PICK_LINE_PROJECTION = {
+//            ROUTE_ID, SERVICE_ID, TRIP_ID, TRIP_HEADSIGN, DIRECTION_ID, SHAPE_ID
+//    };
 
     private static final int ID_TRIPS_LOADER = 353;
 
@@ -136,17 +132,16 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        mSearchLineAdapter.linesFilter(newText);
         mLineQuery = newText;
         getLoaderManager().restartLoader(ID_TRIPS_LOADER, null, this);
         return true;
     }
 
     @Override
-    public void lineChosen(String[] line) {
-        mLineCodeSelectedTV.setText(line[0]);
-        mLineNameSelectedTV.setText(line[3]);
-        mNotification.setLine(line);
+    public void tripSelected(String[] trip) {
+        mLineCodeSelectedTV.setText(trip[TRIPS_ROUTE_ID]);
+        mLineNameSelectedTV.setText(trip[TRIPS_TRIP_HEADSIGN]);
+        mNotification.setLine(trip);
     }
 
     @OnClick(R.id.next_detail_bt)

@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
-import com.gustavohidalgo.quaiscalingudum.interfaces.OnChooseLineListener;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,11 +22,11 @@ import butterknife.ButterKnife;
 public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.LineViewHolder>  {
     private final Context mContext;
     private Cursor mCursor;
-    private final OnChooseLineListener mChooseLineListener;
+    private final OnTripSelectListener mOnTripSelectListener;
 
-    public SearchLineAdapter(Context context, OnChooseLineListener chooseLineListener){
+    public SearchLineAdapter(Context context, OnTripSelectListener tripSelectListener){
         this.mContext = context;
-        this.mChooseLineListener = chooseLineListener;
+        this.mOnTripSelectListener = tripSelectListener;
     }
 
     @Override
@@ -57,23 +57,6 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         notifyDataSetChanged();
     }
 
-    public void linesFilter(String filter) {
-//        mLinesFiltered.clear();
-//        if(filter.isEmpty()){
-//            mLinesFiltered.addAll(mLines);
-//        } else {
-//            filter = filter.toLowerCase();
-//            for(String item : mLines){
-//                String[] line = item.split(",");
-//                if(line[0].toLowerCase().replaceAll("\"", "").contains(filter)
-//                        || line[3].toLowerCase().replaceAll("\"", "").contains(filter)){
-//                    mLinesFiltered.add(item);
-//                    notifyDataSetChanged();
-//                }
-//            }
-//        }
-    }
-
     public class LineViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener{
         @BindView(R.id.line_code_tv)
@@ -96,7 +79,7 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
             for(int i = 1; i < 7; i++){
                 lineChosen[i-1] = mCursor.getString(i);
             }
-            mChooseLineListener.lineChosen(lineChosen);
+            mOnTripSelectListener.tripSelected(lineChosen);
         }
     }
 }
