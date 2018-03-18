@@ -7,7 +7,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by gustavo.hidalgo on 18/02/06.
@@ -21,9 +20,9 @@ public class Notification implements Parcelable {
     private int mDayOfMonth;
     private int mMonthOfYear;
     private int mYear;
-    private String[] mLine;
-    private String[] mStop;
     private boolean mIsWeekly;
+    private Trip mTrip;
+    private StopTime mStopTime;
 
     public Notification() {
     }
@@ -132,13 +131,13 @@ public class Notification implements Parcelable {
         return serviceId.toString();
     }
 
-    public void setLine(String[] line){
-        this.mLine = line;
-    }
-
-    public String[] getLine(){
-        return mLine;
-    }
+//    public void setLine(String[] line){
+//        this.mLine = line;
+//    }
+//
+//    public String[] getLine(){
+//        return mLine;
+//    }
 
     public void setIsWeekly(boolean isWeekly){
         this.mIsWeekly = isWeekly;
@@ -160,13 +159,13 @@ public class Notification implements Parcelable {
         setMinuteOfHour(dateTime.getMinuteOfHour());
     }
 
-    public void setStop(String[] stop){
-        this.mStop = stop;
-    }
-
-    public String[] getStop(){
-        return mStop;
-    }
+//    public void setStopTime(String[] stopTime){
+//        this.mStopTime = stopTime;
+//    }
+//
+//    public String[] getStopTime(){
+//        return mStopTime;
+//    }
 
     public int getMinuteOfHour() {
         return mMinuteOfHour;
@@ -206,5 +205,21 @@ public class Notification implements Parcelable {
 
     public void setYear(int year) {
         this.mYear = year;
+    }
+
+    public void setTrip(Trip trip){
+        this.mTrip = trip;
+    }
+
+    public Trip getTrip(){
+        return mTrip;
+    }
+
+    public void setStopTime(StopTime stopTime){
+        this.mStopTime = stopTime;
+    }
+
+    public StopTime getStopTime(){
+        return mStopTime;
     }
 }

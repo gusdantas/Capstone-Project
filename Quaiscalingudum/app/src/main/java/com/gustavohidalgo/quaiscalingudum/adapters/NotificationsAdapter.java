@@ -9,11 +9,14 @@ import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 /**
  * Created by hdant on 14/02/2018.
@@ -22,7 +25,8 @@ import butterknife.ButterKnife;
 public class NotificationsAdapter extends
         RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>  {
     private ArrayList<String> mLinesFiltered, mLines;
-    private static String[] mLineChosen;
+    //private static String[] mLineChosen;
+    private static Trip sTripSelected;
 
     private static OnTripSelectListener mChooseLineListener;
 
@@ -40,9 +44,19 @@ public class NotificationsAdapter extends
 
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
-        mLineChosen = mLinesFiltered.get(position).split(",");
-        holder.mLineCodeTV.setText(mLineChosen[0]);
-        holder.mLineNameTV.setText(mLineChosen[3]);
+        String[] mLineChosen = mLinesFiltered.get(position).split(",");
+        sTripSelected = new Trip(
+                mLineChosen[TRIPS_ROUTE_ID],
+                mLineChosen[TRIPS_SERVICE_ID],
+                mLineChosen[TRIPS_TRIP_ID],
+                mLineChosen[TRIPS_TRIP_HEADSIGN],
+                mLineChosen[TRIPS_TRIP_DIRECTION_ID],
+                mLineChosen[TRIPS_TRIP_SHAPE_ID]
+        );
+//        holder.mLineCodeTV.setText(mLineChosen[0]);
+//        holder.mLineNameTV.setText(mLineChosen[3]);
+        holder.mLineCodeTV.setText(sTripSelected.getRouteId());
+        holder.mLineNameTV.setText(sTripSelected.getTripHeadsign());
     }
 
     @Override
@@ -98,7 +112,7 @@ public class NotificationsAdapter extends
 
         @Override
         public void onClick(View v) {
-            mChooseLineListener.tripSelected(mLineChosen);
+            mChooseLineListener.tripSelected(sTripSelected);
         }
     }
 }

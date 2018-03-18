@@ -23,6 +23,8 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.StopTime;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -48,10 +50,11 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     private static final int ID_STOP_TIMES_LOADER = 12;
 
     private Notification mNotification;
-    private String[] mLine;
+    //private String[] mLine;
+    private Trip mTrip;
     private Cursor mStopTimesFiltered, mFrequenciesFiltered;
     private DateTime mDateTime;
-    private String mTripId = "";
+    //private String mTripId = "";
     SimpleCursorAdapter mSelectStopAdapter;
     //private int mPosition = RecyclerView.NO_POSITION;
 
@@ -94,8 +97,9 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
-            mLine = mNotification.getLine();
-            mTripId = mLine[2];
+            //mLine = mNotification.getLine();
+            mTrip = mNotification.getTrip();
+            //mTripId = mLine[2];
             getLoaderManager().initLoader(ID_STOP_TIMES_LOADER, null, this);
             getLoaderManager().initLoader(ID_FREQUENCIES_LOADER, null, this);
         }
@@ -107,8 +111,10 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
-        mLineCodeTV.setText(mLine[TRIPS_ROUTE_ID].replaceAll("\"", ""));
-        mLineNameTV.setText(mLine[TRIPS_TRIP_HEADSIGN].replaceAll("\"", ""));
+//        mLineCodeTV.setText(mLine[TRIPS_ROUTE_ID].replaceAll("\"", ""));
+//        mLineNameTV.setText(mLine[TRIPS_TRIP_HEADSIGN].replaceAll("\"", ""));
+        mLineCodeTV.setText(mTrip.getRouteId().replaceAll("\"", ""));
+        mLineNameTV.setText(mTrip.getTripHeadsign().replaceAll("\"", ""));
         String[] strings = {GtfsContract.StopTimesEntry.STOP_ID,
                 GtfsContract.StopTimesEntry.STOP_SEQUENCE};
         int[] ints = {android.R.id.text1, android.R.id.text1};
@@ -169,21 +175,28 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
 
         mStopTimesFiltered.moveToPosition(position);
-        String[] desiredStop = {
-                mStopTimesFiltered.getString(STOP_TIMES__ID),
+//        String[] desiredStop = {
+//                mStopTimesFiltered.getString(STOP_TIMES__ID),
+//                mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
+//                mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
+//                mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
+//                mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
+//                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
+        mNotification.setStopTime(new StopTime(
                 mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
                 mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
                 mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
                 mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
-                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
-        mNotification.setStop(desiredStop);
+                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)
+        ));
 
         // time get by the bus from start to the choosen stop
         int[] refSaidaTerminalTabela = stringToTime(terminalDepartureStop[STOP_TIMES_DEPARTURE_TIME]);
         DateTime refSaidaTerminal = new DateTime(0, 1, 1, 0,
                 refSaidaTerminalTabela[MINUTE], 0);
 
-        int[] refChegadaPontoTabela = stringToTime(mNotification.getStop()[STOP_TIMES_ARRIVAL_TIME]);
+        //int[] refChegadaPontoTabela = stringToTime(mNotification.getStopTime()[STOP_TIMES_ARRIVAL_TIME]);
+        int[] refChegadaPontoTabela = stringToTime(mNotification.getStopTime().getArrivalTime());
         DateTime refChegadaPonto = new DateTime(0, 1, 1,
                 (refChegadaPontoTabela[HOUR] - refSaidaTerminalTabela[HOUR]), refChegadaPontoTabela[MINUTE],
                 0);
@@ -256,7 +269,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 queryUri = GtfsContract.StopTimesEntry.STOP_TIMES_CONTENT_URI;
                 sortOrder = GtfsContract.StopTimesEntry._ID + " ASC";
                 selection = "(" + GtfsContract.StopTimesEntry.TRIP_ID + " LIKE ?)";
-                selectionArgs = new String[]{"%" + mTripId + "%"};
+                selectionArgs = new String[]{"%" + mTrip.getTripId() + "%"};
 
                 return new CursorLoader(getActivity(),
                         queryUri,
@@ -269,7 +282,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 queryUri = GtfsContract.FrequenciesEntry.FREQUENCIES_CONTENT_URI;
                 sortOrder = GtfsContract.FrequenciesEntry._ID + " ASC";
                 selection = "(" + GtfsContract.FrequenciesEntry.TRIP_ID + " LIKE ?)";
-                selectionArgs = new String[]{"%" + mTripId + "%"};
+                selectionArgs = new String[]{"%" + mTrip.getTripId() + "%"};
 
                 return new CursorLoader(getActivity(),
                         queryUri,

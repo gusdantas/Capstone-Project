@@ -22,6 +22,7 @@ import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -137,16 +138,23 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         return true;
     }
 
+//    @Override
+//    public void tripSelected(String[] trip) {
+//        mLineCodeSelectedTV.setText(trip[TRIPS_ROUTE_ID]);
+//        mLineNameSelectedTV.setText(trip[TRIPS_TRIP_HEADSIGN]);
+//        mNotification.setLine(trip);
+//    }
+
     @Override
-    public void tripSelected(String[] trip) {
-        mLineCodeSelectedTV.setText(trip[TRIPS_ROUTE_ID]);
-        mLineNameSelectedTV.setText(trip[TRIPS_TRIP_HEADSIGN]);
-        mNotification.setLine(trip);
+    public void tripSelected(Trip trip) {
+        mLineCodeSelectedTV.setText(trip.getRouteId());
+        mLineNameSelectedTV.setText(trip.getTripHeadsign());
+        mNotification.setTrip(trip);
     }
 
     @OnClick(R.id.next_detail_bt)
     public void onNextPressed() {
-        if (mListener != null && mNotification.getLine() != null) {
+        if (mListener != null && mNotification.getTrip() != null) {
             mListener.toDetails(mNotification);
         }
     }

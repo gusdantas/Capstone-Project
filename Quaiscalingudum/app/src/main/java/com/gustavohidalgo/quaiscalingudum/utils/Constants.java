@@ -24,10 +24,13 @@ public final class Constants {
     public static final int MINUTE = 1;
     public static final int SECOND = 2;
 
-    public static final int TRIPS_ROUTE_ID = 0;
-    public static final int TRIPS_SERVICE_ID = 1;
-    public static final int TRIPS_TRIP_ID = 2;
-    public static final int TRIPS_TRIP_HEADSIGN = 3;
+    public static final int TRIPS__ID = 0;
+    public static final int TRIPS_ROUTE_ID = 1;
+    public static final int TRIPS_SERVICE_ID = 2;
+    public static final int TRIPS_TRIP_ID = 3;
+    public static final int TRIPS_TRIP_HEADSIGN = 4;
+    public static final int TRIPS_TRIP_DIRECTION_ID = 5;
+    public static final int TRIPS_TRIP_SHAPE_ID = 6;
 
     public static final int STOP_TIMES__ID = 0;
     public static final int STOP_TIMES_TRIP_ID = 1;

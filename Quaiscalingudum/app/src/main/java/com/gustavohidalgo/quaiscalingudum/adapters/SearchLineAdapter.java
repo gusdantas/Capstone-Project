@@ -11,9 +11,12 @@ import android.widget.TextView;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 /**
  * Created by hdant on 14/02/2018.
@@ -75,11 +78,24 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            String[] lineChosen = new String[6];
-            for(int i = 1; i < 7; i++){
-                lineChosen[i-1] = mCursor.getString(i);
-            }
-            mOnTripSelectListener.tripSelected(lineChosen);
+//            String[] tripSelected = {
+//                    mCursor.getString(TRIPS__ID),
+//                    mCursor.getString(TRIPS_ROUTE_ID),
+//                    mCursor.getString(TRIPS_SERVICE_ID),
+//                    mCursor.getString(TRIPS_TRIP_ID),
+//                    mCursor.getString(TRIPS_TRIP_HEADSIGN),
+//                    mCursor.getString(TRIPS_TRIP_DIRECTION_ID),
+//                    mCursor.getString(TRIPS_TRIP_SHAPE_ID)
+//            };
+            Trip tripSelected = new Trip(
+                    mCursor.getString(TRIPS_ROUTE_ID),
+                    mCursor.getString(TRIPS_SERVICE_ID),
+                    mCursor.getString(TRIPS_TRIP_ID),
+                    mCursor.getString(TRIPS_TRIP_HEADSIGN),
+                    mCursor.getString(TRIPS_TRIP_DIRECTION_ID),
+                    mCursor.getString(TRIPS_TRIP_SHAPE_ID)
+            );
+            mOnTripSelectListener.tripSelected(tripSelected);
         }
     }
 }

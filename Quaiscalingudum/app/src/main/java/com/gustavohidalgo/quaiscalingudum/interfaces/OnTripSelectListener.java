@@ -7,6 +7,7 @@ package com.gustavohidalgo.quaiscalingudum.interfaces;
 import android.database.Cursor;
 
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 
 /**
  * This interface must be implemented by activities that contain this
@@ -19,5 +20,6 @@ import com.gustavohidalgo.quaiscalingudum.models.Notification;
  * >Communicating with Other Fragments</a> for more information.
  */
 public interface OnTripSelectListener {
-    void tripSelected(String[] line);
+    void tripSelected(Trip trip);
+//    void tripSelected(String[] line);
 }
