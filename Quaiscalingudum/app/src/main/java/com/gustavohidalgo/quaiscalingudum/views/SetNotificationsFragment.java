@@ -82,8 +82,6 @@ public class SetNotificationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_notifications, container, false);
         ButterKnife.bind(this, view);
-//        mLineNameTV.setText(mNotification.getLine()[TRIPS_TRIP_HEADSIGN]);
-//        mLineCodeTV.setText(mNotification.getLine()[TRIPS_ROUTE_ID]);
         mLineNameTV.setText(mNotification.getTrip().getTripHeadsign());
         mLineCodeTV.setText(mNotification.getTrip().getRouteId());
         String time = mNotification.getDateTime().getHourOfDay() + ":" +
@@ -94,8 +92,9 @@ public class SetNotificationsFragment extends Fragment {
 
     @OnClick(R.id.next_finish_bt)
     public void onNextPressed() {
-        getActivity().finish();
-
+        if (mListener != null) {
+            mListener.toFinishCreatingNotification(mNotification);
+        }
     }
 
     @OnClick(R.id.back_details_bt)

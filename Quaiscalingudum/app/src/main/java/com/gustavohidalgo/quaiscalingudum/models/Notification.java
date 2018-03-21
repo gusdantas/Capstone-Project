@@ -131,14 +131,6 @@ public class Notification implements Parcelable {
         return serviceId.toString();
     }
 
-//    public void setLine(String[] line){
-//        this.mLine = line;
-//    }
-//
-//    public String[] getLine(){
-//        return mLine;
-//    }
-
     public void setIsWeekly(boolean isWeekly){
         this.mIsWeekly = isWeekly;
     }
@@ -158,14 +150,6 @@ public class Notification implements Parcelable {
         setHourOfDay(dateTime.getHourOfDay());
         setMinuteOfHour(dateTime.getMinuteOfHour());
     }
-
-//    public void setStopTime(String[] stopTime){
-//        this.mStopTime = stopTime;
-//    }
-//
-//    public String[] getStopTime(){
-//        return mStopTime;
-//    }
 
     public int getMinuteOfHour() {
         return mMinuteOfHour;

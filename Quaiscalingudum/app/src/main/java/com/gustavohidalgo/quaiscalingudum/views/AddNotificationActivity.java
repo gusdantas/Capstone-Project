@@ -68,4 +68,11 @@ public class AddNotificationActivity extends AppCompatActivity
                 .replace(R.id.activity_add_notification, setNotificationsFragment, SET_NOTIFICATIONS)
                 .commit();
     }
+
+    @Override
+    public void toFinishCreatingNotification(Notification notification) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(NOTIFICATION, notification);
+        startActivity(intent);
+    }
 }

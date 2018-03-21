@@ -21,4 +21,5 @@ public interface OnEditNotificationListener {
     void toPickLine(Notification notification);
     void toDetails(Notification notification);
     void toSetNotifications(Notification notification);
+    void toFinishCreatingNotification(Notification notification);
 }

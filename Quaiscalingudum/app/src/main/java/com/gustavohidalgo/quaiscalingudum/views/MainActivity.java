@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.squareup.picasso.Picasso;
 
 import java.util.Arrays;
@@ -39,11 +40,18 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.OLD_NOTIFICATION;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
+
+    private DatabaseReference mDatabase;
+    Notification mNotification;
+
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
@@ -83,7 +91,17 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        initializeFirebase();
+        if(savedInstanceState == null) {
+            Intent intent = getIntent();
+            mNotification = intent.getParcelableExtra(NOTIFICATION);
+
+            if (mNotification == null) {
+                initializeFirebase();
+            } else {
+                writeNewNotification(sUser.getUid(), mNotification);
+            }
+        }
+
     }
 
     @Override
@@ -158,6 +176,7 @@ public class MainActivity extends AppCompatActivity
                 if (sUser != null) {
                     // Already exists and it's logged.
                     updateUserInformationUI();
+                    mDatabase = FirebaseDatabase.getInstance().getReference();
                 } else {
                     // First time sUser.
 
@@ -182,6 +201,7 @@ public class MainActivity extends AppCompatActivity
     private void goHome() {
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
         // Write a message to the database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     private void updateUserInformationUI() {
@@ -197,29 +217,29 @@ public class MainActivity extends AppCompatActivity
             mProfileEmailTv.setText(sUser.getEmail());
 
         }
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("message");
-        // Read from the database
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                testTv.setText(value);
-                Log.d("gugu", "Value is: " + value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                String text = "Failed to read value.";
-                testTv.setText(text);
-                Log.w("gugu", "Failed to read value.", error.toException());
-            }
-        });
-
-        databaseReference.setValue("Novo teste!");
+//        firebaseDatabase = FirebaseDatabase.getInstance();
+//        databaseReference = firebaseDatabase.getReference("message");
+//        // Read from the database
+//        databaseReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue(String.class);
+//                testTv.setText(value);
+//                Log.d("gugu", "Value is: " + value);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                String text = "Failed to read value.";
+//                testTv.setText(text);
+//                Log.w("gugu", "Failed to read value.", error.toException());
+//            }
+//        });
+//
+//        databaseReference.setValue("Novo teste!");
     }
 
     private void setupDrawerHeader() {
@@ -236,5 +256,10 @@ public class MainActivity extends AppCompatActivity
     private void addNotification(){
         Intent intent = new Intent(this, AddNotificationActivity.class);
         startActivity(intent);
+    }
+
+    private void writeNewNotification(String userId, Notification notification) {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase.child("users").child(userId).setValue("teste");
     }
 }
