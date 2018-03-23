@@ -15,6 +15,9 @@ import android.widget.TextView;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
+
+import org.joda.time.DateTime;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,10 +85,11 @@ public class SetNotificationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_notifications, container, false);
         ButterKnife.bind(this, view);
+        DateTime dateTime = NotificationUtils.getDateTime(mNotification);
         mLineNameTV.setText(mNotification.getTrip().getTripHeadsign());
         mLineCodeTV.setText(mNotification.getTrip().getRouteId());
-        String time = mNotification.getDateTime().getHourOfDay() + ":" +
-                mNotification.getDateTime().getMinuteOfHour();
+        String time = dateTime.getHourOfDay() + ":" +
+                dateTime.getMinuteOfHour();
         mArrivalTime.setText(time);
         return view;
     }
@@ -93,6 +97,7 @@ public class SetNotificationsFragment extends Fragment {
     @OnClick(R.id.next_finish_bt)
     public void onNextPressed() {
         if (mListener != null) {
+            mNotification.setName(mNotificationName.getText().toString());
             mListener.toFinishCreatingNotification(mNotification);
         }
     }

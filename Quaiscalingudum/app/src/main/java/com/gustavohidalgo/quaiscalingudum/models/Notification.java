@@ -2,6 +2,9 @@ package com.gustavohidalgo.quaiscalingudum.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
@@ -23,12 +26,26 @@ public class Notification implements Parcelable {
     private boolean mIsWeekly;
     private Trip mTrip;
     private StopTime mStopTime;
+    private String mName;
 
     public Notification() {
     }
 
+    public Notification(DataSnapshot dataSnapshot) {
+        fromMap(dataSnapshot);
+    }
+
     protected Notification(Parcel in) {
         mDaysOfWeek = in.readInt();
+        mMinuteOfHour = in.readInt();
+        mHourOfDay = in.readInt();
+        mDayOfMonth = in.readInt();
+        mMonthOfYear = in.readInt();
+        mYear = in.readInt();
+        mIsWeekly = in.readByte() != 0;
+        mTrip = in.readBundle(Trip.class);
+        mStopTime;
+        mName = in.readString();
     }
 
     public static final Creator<Notification> CREATOR = new Creator<Notification>() {
@@ -65,82 +82,12 @@ public class Notification implements Parcelable {
         return mDaysOfWeek;
     }
 
-    public String getServiceIds(){
-        ArrayList<String> serviceIdd = new ArrayList<>();
-        serviceIdd.add("USD");
-        StringBuilder serviceId = new StringBuilder();
-
-        if(mIsWeekly) {
-            if ((mDaysOfWeek &= 0b0111110) > 0) {
-                serviceIdd.add("U__");
-                serviceIdd.add("U_D");
-                serviceIdd.add("US_");
-                serviceId.append("U");
-            } else {
-                serviceId.append("_");
-            }
-
-            if ((mDaysOfWeek &= 0b0000001) > 0) {
-                serviceIdd.add("_S_");
-                serviceIdd.add("_SD");
-                if(!serviceIdd.contains("US_")) {
-                    serviceIdd.add("US_");
-                }
-                serviceId.append("S");
-            } else {
-                serviceId.append("_");
-            }
-
-            if ((mDaysOfWeek &= 0b1000000) > 0) {
-                serviceIdd.add("__D");
-                if(!serviceIdd.contains("_SD")) {
-                    serviceIdd.add("_SD");
-                }
-                if(!serviceIdd.contains("U_D")) {
-                    serviceIdd.add("U_D");
-                }
-                serviceId.append("D");
-            } else {
-                serviceId.append("_");
-            }
-        } else {
-            DateTime dateTime = new DateTime(mYear, mMonthOfYear, mDayOfMonth, mHourOfDay,
-                    mMinuteOfHour);
-            if (dateTime.getDayOfWeek() == DateTimeConstants.MONDAY
-                    || dateTime.getDayOfWeek() == DateTimeConstants.TUESDAY
-                    || dateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
-                    || dateTime.getDayOfWeek() == DateTimeConstants.THURSDAY
-                    || dateTime.getDayOfWeek() == DateTimeConstants.FRIDAY){
-                serviceIdd.add("U__");
-                serviceIdd.add("U_D");
-                serviceIdd.add("US_");
-                serviceId.append("U__");
-            } else if (dateTime.getDayOfWeek() == DateTimeConstants.SATURDAY){
-                serviceIdd.add("_S_");
-                serviceIdd.add("_SD");
-                serviceIdd.add("US_");
-                serviceId.append("_S_");
-            } else if (dateTime.getDayOfWeek() == DateTimeConstants.SUNDAY){
-                serviceIdd.add("__D");
-                serviceIdd.add("_SD");
-                serviceIdd.add("U_D");
-                serviceId.append("__D");
-            }
-        }
-
-        return serviceId.toString();
-    }
-
     public void setIsWeekly(boolean isWeekly){
         this.mIsWeekly = isWeekly;
     }
 
     public boolean isWeekly(){
         return mIsWeekly;
-    }
-
-    public DateTime getDateTime() {
-        return new DateTime(mYear, mMonthOfYear, mDayOfMonth, mHourOfDay, mMinuteOfHour);
     }
 
     public void setDateTime(DateTime dateTime) {
@@ -206,4 +153,26 @@ public class Notification implements Parcelable {
     public StopTime getStopTime(){
         return mStopTime;
     }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        this.mName = name;
+    }
+
+    private void fromMap(DataSnapshot dataSnapshot) {
+        mName = dataSnapshot.getKey();
+        mDaysOfWeek = dataSnapshot.child("daysOfWeek").getValue(Integer.class);
+        mMinuteOfHour = dataSnapshot.child("mMinuteOfHour").getValue(Integer.class);
+        mHourOfDay = dataSnapshot.child("mHourOfDay").getValue(Integer.class);
+        mDayOfMonth = dataSnapshot.child("mDayOfMonth").getValue(Integer.class);
+        mMonthOfYear = dataSnapshot.child("mMonthOfYear").getValue(Integer.class);
+        mYear = dataSnapshot.child("mYear").getValue(Integer.class);
+        mIsWeekly = dataSnapshot.child("mIsWeekly").getValue(Boolean.class);
+        mTrip = dataSnapshot.child("mTrip").getValue(Trip.class);
+        mStopTime = dataSnapshot.child("mStopTime").getValue(StopTime.class);
+    }
+
 }

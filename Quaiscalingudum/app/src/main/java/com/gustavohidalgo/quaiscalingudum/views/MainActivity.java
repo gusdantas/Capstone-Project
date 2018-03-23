@@ -92,12 +92,11 @@ public class MainActivity extends AppCompatActivity
         mNavigationView.setNavigationItemSelectedListener(this);
 
         if(savedInstanceState == null) {
+            initializeFirebase();
             Intent intent = getIntent();
-            mNotification = intent.getParcelableExtra(NOTIFICATION);
-
-            if (mNotification == null) {
-                initializeFirebase();
-            } else {
+            Bundle bundle = intent.getBundleExtra(NOTIFICATION);
+            if (bundle != null) {
+                mNotification = bundle.getParcelable(NOTIFICATION);
                 writeNewNotification(sUser.getUid(), mNotification);
             }
         }
@@ -260,6 +259,6 @@ public class MainActivity extends AppCompatActivity
 
     private void writeNewNotification(String userId, Notification notification) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(userId).setValue("teste");
+        mDatabase.child("users").child(userId).setValue(notification);
     }
 }

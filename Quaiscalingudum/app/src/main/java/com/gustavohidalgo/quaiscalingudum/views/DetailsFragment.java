@@ -25,6 +25,7 @@ import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.gustavohidalgo.quaiscalingudum.models.StopTime;
 import com.gustavohidalgo.quaiscalingudum.models.Trip;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -204,9 +205,10 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         DateTime tempoViagem = new DateTime(refChegadaPonto.getMillis() - refSaidaTerminal.getMillis());
 
         // get the start time considering the bus arriving at the choosen point in the choosen time
+        DateTime dateTime = NotificationUtils.getDateTime(mNotification);
         DateTime horaChegadaDesejada = new DateTime(0,1,1,
-                mNotification.getDateTime().getHourOfDay(),
-                mNotification.getDateTime().getMinuteOfHour(), 0);
+                dateTime.getHourOfDay(),
+                dateTime.getMinuteOfHour(), 0);
         DateTime horaSaidaDesejada = new DateTime(horaChegadaDesejada.getMillis() - tempoViagem.getMillis());
 
         // get the headway_sec atr the time of the bus departuring
@@ -250,9 +252,10 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         RadioButton button = group.findViewById(checkedId);
         String[] choosenTime = button.getText().toString().split(":");
-        mDateTime = new DateTime(mNotification.getDateTime().getYear(),
-                mNotification.getDateTime().getMonthOfYear(),
-                mNotification.getDateTime().getDayOfMonth(),
+        DateTime dateTime = NotificationUtils.getDateTime(mNotification);
+        mDateTime = new DateTime(dateTime.getYear(),
+                dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth(),
                 Integer.parseInt(choosenTime[HOUR]),
                 Integer.parseInt(choosenTime[MINUTE]),0);
     }

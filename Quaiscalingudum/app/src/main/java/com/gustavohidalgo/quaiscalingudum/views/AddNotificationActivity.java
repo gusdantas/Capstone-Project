@@ -72,7 +72,10 @@ public class AddNotificationActivity extends AppCompatActivity
     @Override
     public void toFinishCreatingNotification(Notification notification) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(NOTIFICATION, notification);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(NOTIFICATION, notification);
+        //intent.putExtra(NOTIFICATION, notification);
+        intent.putExtra(NOTIFICATION, bundle);
         startActivity(intent);
     }
 }

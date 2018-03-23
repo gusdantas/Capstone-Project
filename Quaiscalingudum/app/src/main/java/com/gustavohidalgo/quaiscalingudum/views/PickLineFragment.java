@@ -23,6 +23,7 @@ import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.gustavohidalgo.quaiscalingudum.models.Trip;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,7 +90,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
-            mDaysQuery = mNotification.getServiceIds();
+            mDaysQuery = NotificationUtils.getServiceIds(mNotification);
         }
         getLoaderManager().initLoader(ID_TRIPS_LOADER, null, this);
     }
