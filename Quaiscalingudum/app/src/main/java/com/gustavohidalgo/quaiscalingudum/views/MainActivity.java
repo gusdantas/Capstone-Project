@@ -259,6 +259,6 @@ public class MainActivity extends AppCompatActivity
 
     private void writeNewNotification(String userId, Notification notification) {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(userId).setValue(notification);
+        mDatabase.child("users").child(userId).child(notification.getName()).setValue(notification);
     }
 }

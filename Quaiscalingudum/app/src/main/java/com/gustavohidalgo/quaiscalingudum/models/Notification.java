@@ -36,6 +36,7 @@ public class Notification implements Parcelable {
     }
 
     protected Notification(Parcel in) {
+        mName = in.readString();
         mDaysOfWeek = in.readInt();
         mMinuteOfHour = in.readInt();
         mHourOfDay = in.readInt();
@@ -43,9 +44,10 @@ public class Notification implements Parcelable {
         mMonthOfYear = in.readInt();
         mYear = in.readInt();
         mIsWeekly = in.readByte() != 0;
-        mTrip = in.readBundle(Trip.class);
-        mStopTime;
-        mName = in.readString();
+        mTrip = new Trip(in.readString(), in.readString(), in.readString(), in.readString(),
+                in.readString(), in.readString());
+        mStopTime = new StopTime(in.readString(), in.readString(), in.readString(), in.readString(),
+                in.readString());
     }
 
     public static final Creator<Notification> CREATOR = new Creator<Notification>() {
@@ -67,7 +69,25 @@ public class Notification implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mName);
         dest.writeInt(mDaysOfWeek);
+        dest.writeInt(mMinuteOfHour);
+        dest.writeInt(mHourOfDay);
+        dest.writeInt(mDayOfMonth);
+        dest.writeInt(mMonthOfYear);
+        dest.writeInt(mYear);
+        dest.writeByte((byte) (mIsWeekly ? 1 : 0 ));
+        dest.writeString(mTrip.getDirectionId());
+        dest.writeString(mTrip.getRouteId());
+        dest.writeString(mTrip.getServiceId());
+        dest.writeString(mTrip.getShapeId());
+        dest.writeString(mTrip.getTripHeadsign());
+        dest.writeString(mTrip.getTripId());
+        dest.writeString(mStopTime.getArrivalTime());
+        dest.writeString(mStopTime.getDepartureTime());
+        dest.writeString(mStopTime.getStopId());
+        dest.writeString(mStopTime.getStopSequence());
+        dest.writeString(mStopTime.getTripId());
     }
 
     public void setDayOfWeek(int dayOfWeek) {
