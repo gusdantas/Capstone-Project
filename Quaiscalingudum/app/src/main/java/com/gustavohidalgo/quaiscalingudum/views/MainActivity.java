@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,15 +27,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.gustavohidalgo.quaiscalingudum.R;
+import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,20 +55,22 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
 
-    private DatabaseReference mDatabase;
     Notification mNotification;
+    List<Notification> mNotificationList;
+    DatabaseReference mDatabaseReference;
+    FirebaseDatabase mFirebaseDatabase;
+    private ChildEventListener mMenuEventListener;
+    NotificationsAdapter mNotificationsAdapter;
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
     @BindView(R.id.nav_view) NavigationView mNavigationView;
     @BindView(R.id.test_tv) TextView testTv;
+    @BindView(R.id.notification_rv) RecyclerView mNotificationRV;
     ImageView mProfilePictureIv;
     TextView mProfileEmailTv;
     TextView mProfileNameTv;
-
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
 
     private static final int RC_SIGN_IN = 123;
 
@@ -175,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                 if (sUser != null) {
                     // Already exists and it's logged.
                     updateUserInformationUI();
-                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                    //mDatabase = FirebaseDatabase.getInstance().getReference();
                 } else {
                     // First time sUser.
 
@@ -200,7 +208,8 @@ public class MainActivity extends AppCompatActivity
     private void goHome() {
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
         // Write a message to the database
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mNotificationList = new ArrayList<>();
+        // mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
     }
 
     private void updateUserInformationUI() {
@@ -239,6 +248,43 @@ public class MainActivity extends AppCompatActivity
 //        });
 //
 //        databaseReference.setValue("Novo teste!");
+        Log.d("gugu", "Value is: ");
+        mNotificationList = new ArrayList<>();
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
+        mMenuEventListener = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), false);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                databaseError.toException();
+            }
+        };
+        mDatabaseReference.addChildEventListener(mMenuEventListener);
+
+        mNotificationsAdapter = new NotificationsAdapter(this, mNotificationList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mNotificationRV.setLayoutManager(mLayoutManager);
+        mNotificationRV.setAdapter(mNotificationsAdapter);
     }
 
     private void setupDrawerHeader() {
@@ -258,7 +304,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void writeNewNotification(String userId, Notification notification) {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("users").child(userId).child(notification.getName()).setValue(notification);
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + userId);
+        mDatabaseReference.child(notification.getName()).setValue(notification);
+    }
+
+    private void refreshAnnouncementsListValues(Notification value, boolean needsClear) {
+        if (needsClear) {
+            mNotificationList.clear();
+        }
+        mNotificationList.add(value);
+        mAnnouncementAdapter.notifyDataSetChanged();
     }
 }
