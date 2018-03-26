@@ -11,6 +11,10 @@ public class Stop {
     private String mStopLat;
     private String mStopLon;
 
+    public Stop(){
+
+    }
+
     public Stop(String mStopId, String mStopName, String mStopDesc, String mStopLat, String mStopLon) {
         this.mStopId = mStopId;
         this.mStopName = mStopName;

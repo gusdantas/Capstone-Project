@@ -78,15 +78,6 @@ public class SearchLineAdapter extends RecyclerView.Adapter<SearchLineAdapter.Li
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-//            String[] tripSelected = {
-//                    mCursor.getString(TRIPS__ID),
-//                    mCursor.getString(TRIPS_ROUTE_ID),
-//                    mCursor.getString(TRIPS_SERVICE_ID),
-//                    mCursor.getString(TRIPS_TRIP_ID),
-//                    mCursor.getString(TRIPS_TRIP_HEADSIGN),
-//                    mCursor.getString(TRIPS_TRIP_DIRECTION_ID),
-//                    mCursor.getString(TRIPS_TRIP_SHAPE_ID)
-//            };
             Trip tripSelected = new Trip(
                     mCursor.getString(TRIPS_ROUTE_ID),
                     mCursor.getString(TRIPS_SERVICE_ID),

@@ -12,6 +12,10 @@ public class Trip {
     private String mDirectionId;
     private String mShapeId;
 
+    public Trip(){
+
+    }
+
     public Trip(String routeId, String serviceId, String tripId, String tripHeadsign,
                 String directionId, String shapeId) {
         this.mRouteId = routeId;

@@ -7,6 +7,7 @@ package com.gustavohidalgo.quaiscalingudum.utils;
 public final class Constants {
     public static final String NOTIFICATION = "notification";
     public static final String OLD_NOTIFICATION = "old_notification";
+    public static final String NOTIFICATION_LIST = "notification_list";
     public static final String ETA = "eta";
     public static final String PICK_LINE = "pick_line";
     public static final String DETAILS = "details";

@@ -5,13 +5,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
+import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.gustavohidalgo.quaiscalingudum.models.Trip;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,13 +28,13 @@ import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class NotificationsAdapter extends
         RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>  {
-    private ArrayList<String> mLinesFiltered, mLines;
-    //private static String[] mLineChosen;
-    private static Trip sTripSelected;
+    private Context mContext;
+    private List<Notification> mNotificationList;
 
-    private static OnTripSelectListener mChooseLineListener;
 
-    public NotificationsAdapter(){
+    public NotificationsAdapter(Context context, List<Notification> notificationList){
+        this.mContext = context;
+        this.mNotificationList = notificationList;
 
     }
 
@@ -38,70 +42,44 @@ public class NotificationsAdapter extends
     public NotificationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.line_item, parent, false);
+        View view = layoutInflater.inflate(R.layout.notification_item, parent, false);
         return new NotificationViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
-        String[] mLineChosen = mLinesFiltered.get(position).split(",");
-        sTripSelected = new Trip(
-                mLineChosen[TRIPS_ROUTE_ID],
-                mLineChosen[TRIPS_SERVICE_ID],
-                mLineChosen[TRIPS_TRIP_ID],
-                mLineChosen[TRIPS_TRIP_HEADSIGN],
-                mLineChosen[TRIPS_TRIP_DIRECTION_ID],
-                mLineChosen[TRIPS_TRIP_SHAPE_ID]
-        );
-//        holder.mLineCodeTV.setText(mLineChosen[0]);
-//        holder.mLineNameTV.setText(mLineChosen[3]);
-        holder.mLineCodeTV.setText(sTripSelected.getRouteId());
-        holder.mLineNameTV.setText(sTripSelected.getTripHeadsign());
+        Notification notification = mNotificationList.get(position);
+        holder.mNameSW.setText(notification.getName());
+        holder.mLineCodeTV.setText(notification.getTrip().getRouteId());
+        holder.mLineNameTV.setText(notification.getTrip().getTripHeadsign());
+        holder.mDepartTimeTV.setText("");
+        holder.mDepartPlaceTV.setText("");
+        holder.mArriveTimeTV.setText(NotificationUtils.getDateTime(notification).toString());
+        holder.mArrivePlaceTV.setText(notification.getStopTime().getStopId());
+
     }
 
     @Override
     public int getItemCount() {
-        if (mLinesFiltered != null){
-            return mLinesFiltered.size();
-        }
-        return 0;
-    }
-
-    public void setLines(ArrayList<String> lines){
-        this.mLines = new ArrayList<>();
-        this.mLinesFiltered = new ArrayList<>();
-        this.mLines.addAll(lines);
-        this.mLinesFiltered.addAll(lines);
-        notifyDataSetChanged();
-    }
-
-    public void setChooseLineListener(OnTripSelectListener chooseLineListener){
-        mChooseLineListener = chooseLineListener;
-    }
-
-    public void linesFilter(String filter) {
-        mLinesFiltered.clear();
-        if(filter.isEmpty()){
-            mLinesFiltered.addAll(mLines);
-        } else {
-            filter = filter.toLowerCase();
-            for(String item : mLines){
-                String[] line = item.split(",");
-                if(line[0].toLowerCase().replaceAll("\"", "").contains(filter)
-                        || line[3].toLowerCase().replaceAll("\"", "").contains(filter)){
-                    mLinesFiltered.add(item);
-                    notifyDataSetChanged();
-                }
-            }
-        }
+        return mNotificationList.size();
     }
 
     public static class NotificationViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener{
+        @BindView(R.id.name_switch)
+        Switch mNameSW;
         @BindView(R.id.line_code_tv)
         TextView mLineCodeTV;
         @BindView(R.id.line_name_tv)
         TextView mLineNameTV;
+        @BindView(R.id.depart_time_tv)
+        TextView mDepartTimeTV;
+        @BindView(R.id.depart_place_tv)
+        TextView mDepartPlaceTV;
+        @BindView(R.id.arrive_time_tv)
+        TextView mArriveTimeTV;
+        @BindView(R.id.arrive_place_tv)
+        TextView mArrivePlaceTV;
 
 
         public NotificationViewHolder(View itemView) {
@@ -112,7 +90,7 @@ public class NotificationsAdapter extends
 
         @Override
         public void onClick(View v) {
-            mChooseLineListener.tripSelected(sTripSelected);
+
         }
     }
 }

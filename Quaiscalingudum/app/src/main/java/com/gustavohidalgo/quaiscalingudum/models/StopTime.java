@@ -11,6 +11,10 @@ public class StopTime {
     private String mStopId;
     private String mStopSequence;
 
+    public StopTime(){
+
+    }
+
     public StopTime(String tripId, String arrivalTime, String departureTime, String stopId,
                     String stopSequence) {
         this.mTripId = tripId;

@@ -8,11 +8,14 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
+import java.util.ArrayList;
+
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {
     private Notification mNotification;
+    private ArrayList<String> mNotificationList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +25,7 @@ public class AddNotificationActivity extends AppCompatActivity
         if(savedInstanceState == null) {
             Intent intent = getIntent();
             mNotification = intent.getParcelableExtra(OLD_NOTIFICATION);
+            mNotificationList = intent.getStringArrayListExtra(NOTIFICATION_LIST);
 
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
@@ -62,7 +66,7 @@ public class AddNotificationActivity extends AppCompatActivity
     @Override
     public void toSetNotifications(Notification notification) {
         SetNotificationsFragment setNotificationsFragment = SetNotificationsFragment
-                .newInstance(notification);
+                .newInstance(notification, mNotificationList);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, setNotificationsFragment, SET_NOTIFICATIONS)

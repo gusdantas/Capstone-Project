@@ -3,6 +3,7 @@ package com.gustavohidalgo.quaiscalingudum.views;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextClock;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
@@ -19,11 +21,15 @@ import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION_LIST;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
 
@@ -48,6 +54,7 @@ public class SetNotificationsFragment extends Fragment {
     @BindView(R.id.notifications_added_rv)
     RecyclerView mNotificationsRV;
 
+    private ArrayList<String> mNotificationList;
     private Notification mNotification;
 
     private OnEditNotificationListener mListener;
@@ -63,10 +70,12 @@ public class SetNotificationsFragment extends Fragment {
      * @param notification Parameter 1.
      * @return A new instance of fragment SetNotificationsFragment.
      */
-    public static SetNotificationsFragment newInstance(Notification notification) {
+    public static SetNotificationsFragment newInstance(Notification notification,
+                                                       ArrayList<String> notificationList) {
         SetNotificationsFragment fragment = new SetNotificationsFragment();
         Bundle args = new Bundle();
         args.putParcelable(NOTIFICATION, notification);
+        args.putStringArrayList(NOTIFICATION_LIST, notificationList);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,6 +85,7 @@ public class SetNotificationsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
+            mNotificationList = getArguments().getStringArrayList(NOTIFICATION_LIST);
         }
     }
 
@@ -97,8 +107,12 @@ public class SetNotificationsFragment extends Fragment {
     @OnClick(R.id.next_finish_bt)
     public void onNextPressed() {
         if (mListener != null) {
-            mNotification.setName(mNotificationName.getText().toString());
-            mListener.toFinishCreatingNotification(mNotification);
+            if (mNotificationList.contains(mNotificationName.getText().toString())){
+                Toast.makeText(getContext(), "this name already exists", Toast.LENGTH_SHORT).show();
+            } else {
+                mNotification.setName(mNotificationName.getText().toString());
+                mListener.toFinishCreatingNotification(mNotification);
+            }
         }
     }
 

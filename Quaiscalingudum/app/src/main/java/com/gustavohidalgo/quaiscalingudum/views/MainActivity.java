@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -32,7 +30,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
@@ -46,8 +43,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.OLD_NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,8 +53,8 @@ public class MainActivity extends AppCompatActivity
 
     Notification mNotification;
     List<Notification> mNotificationList;
+    ArrayList<String> mNotificationNameList;
     DatabaseReference mDatabaseReference;
-    FirebaseDatabase mFirebaseDatabase;
     private ChildEventListener mMenuEventListener;
     NotificationsAdapter mNotificationsAdapter;
 
@@ -105,7 +101,7 @@ public class MainActivity extends AppCompatActivity
             Bundle bundle = intent.getBundleExtra(NOTIFICATION);
             if (bundle != null) {
                 mNotification = bundle.getParcelable(NOTIFICATION);
-                writeNewNotification(sUser.getUid(), mNotification);
+                writeNewNotification(mNotification);
             }
         }
 
@@ -209,6 +205,7 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
         // Write a message to the database
         mNotificationList = new ArrayList<>();
+        mNotificationNameList = new ArrayList<>();
         // mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
     }
 
@@ -225,53 +222,30 @@ public class MainActivity extends AppCompatActivity
             mProfileEmailTv.setText(sUser.getEmail());
 
         }
-//        firebaseDatabase = FirebaseDatabase.getInstance();
-//        databaseReference = firebaseDatabase.getReference("message");
-//        // Read from the database
-//        databaseReference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                String value = dataSnapshot.getValue(String.class);
-//                testTv.setText(value);
-//                Log.d("gugu", "Value is: " + value);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError error) {
-//                // Failed to read value
-//                String text = "Failed to read value.";
-//                testTv.setText(text);
-//                Log.w("gugu", "Failed to read value.", error.toException());
-//            }
-//        });
-//
-//        databaseReference.setValue("Novo teste!");
-        Log.d("gugu", "Value is: ");
-        mNotificationList = new ArrayList<>();
 
+        mNotificationList = new ArrayList<>();
+        mNotificationNameList = new ArrayList<>();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
         mMenuEventListener = new ChildEventListener() {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), false);
+                refreshNotificationList(dataSnapshot.getValue(Notification.class), false);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                refreshAnnouncementsListValues(dataSnapshot.getValue(Notification.class), true);
+                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
             }
 
             @Override
@@ -282,7 +256,7 @@ public class MainActivity extends AppCompatActivity
         mDatabaseReference.addChildEventListener(mMenuEventListener);
 
         mNotificationsAdapter = new NotificationsAdapter(this, mNotificationList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mNotificationRV.setLayoutManager(mLayoutManager);
         mNotificationRV.setAdapter(mNotificationsAdapter);
     }
@@ -300,19 +274,22 @@ public class MainActivity extends AppCompatActivity
 
     private void addNotification(){
         Intent intent = new Intent(this, AddNotificationActivity.class);
+        intent.putStringArrayListExtra(NOTIFICATION_LIST, mNotificationNameList);
         startActivity(intent);
     }
 
-    private void writeNewNotification(String userId, Notification notification) {
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + userId);
+    private void writeNewNotification(Notification notification) {
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
         mDatabaseReference.child(notification.getName()).setValue(notification);
     }
 
-    private void refreshAnnouncementsListValues(Notification value, boolean needsClear) {
+    private void refreshNotificationList(Notification value, boolean needsClear) {
         if (needsClear) {
             mNotificationList.clear();
+            mNotificationNameList.clear();
         }
         mNotificationList.add(value);
-        mAnnouncementAdapter.notifyDataSetChanged();
+        mNotificationNameList.add(value.getName());
+        mNotificationsAdapter.notifyDataSetChanged();
     }
 }

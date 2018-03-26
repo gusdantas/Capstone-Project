@@ -17,16 +17,17 @@ import java.util.ArrayList;
 
 public class Notification implements Parcelable {
 
+    private String mName;
+    private boolean mIsActive;
+    private boolean mIsWeekly;
     private int mDaysOfWeek;
     private int mMinuteOfHour;
     private int mHourOfDay;
     private int mDayOfMonth;
     private int mMonthOfYear;
     private int mYear;
-    private boolean mIsWeekly;
     private Trip mTrip;
     private StopTime mStopTime;
-    private String mName;
 
     public Notification() {
     }
@@ -37,13 +38,14 @@ public class Notification implements Parcelable {
 
     protected Notification(Parcel in) {
         mName = in.readString();
+        mIsActive = in.readByte() != 0;
+        mIsWeekly = in.readByte() != 0;
         mDaysOfWeek = in.readInt();
         mMinuteOfHour = in.readInt();
         mHourOfDay = in.readInt();
         mDayOfMonth = in.readInt();
         mMonthOfYear = in.readInt();
         mYear = in.readInt();
-        mIsWeekly = in.readByte() != 0;
         mTrip = new Trip(in.readString(), in.readString(), in.readString(), in.readString(),
                 in.readString(), in.readString());
         mStopTime = new StopTime(in.readString(), in.readString(), in.readString(), in.readString(),
@@ -70,24 +72,25 @@ public class Notification implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mName);
+        dest.writeByte((byte) (mIsActive ? 1 : 0 ));
+        dest.writeByte((byte) (mIsWeekly ? 1 : 0 ));
         dest.writeInt(mDaysOfWeek);
         dest.writeInt(mMinuteOfHour);
         dest.writeInt(mHourOfDay);
         dest.writeInt(mDayOfMonth);
         dest.writeInt(mMonthOfYear);
         dest.writeInt(mYear);
-        dest.writeByte((byte) (mIsWeekly ? 1 : 0 ));
-        dest.writeString(mTrip.getDirectionId());
         dest.writeString(mTrip.getRouteId());
         dest.writeString(mTrip.getServiceId());
-        dest.writeString(mTrip.getShapeId());
-        dest.writeString(mTrip.getTripHeadsign());
         dest.writeString(mTrip.getTripId());
+        dest.writeString(mTrip.getTripHeadsign());
+        dest.writeString(mTrip.getDirectionId());
+        dest.writeString(mTrip.getShapeId());
+        dest.writeString(mStopTime.getTripId());
         dest.writeString(mStopTime.getArrivalTime());
         dest.writeString(mStopTime.getDepartureTime());
         dest.writeString(mStopTime.getStopId());
         dest.writeString(mStopTime.getStopSequence());
-        dest.writeString(mStopTime.getTripId());
     }
 
     public void setDayOfWeek(int dayOfWeek) {
@@ -100,6 +103,14 @@ public class Notification implements Parcelable {
 
     public int getDaysOfWeek() {
         return mDaysOfWeek;
+    }
+
+    public void setIsActive(boolean isActive){
+        this.mIsActive = isActive;
+    }
+
+    public boolean isActive(){
+        return mIsActive;
     }
 
     public void setIsWeekly(boolean isWeekly){
@@ -184,13 +195,14 @@ public class Notification implements Parcelable {
 
     private void fromMap(DataSnapshot dataSnapshot) {
         mName = dataSnapshot.getKey();
+        mIsActive = dataSnapshot.child("mIsActive").getValue(Boolean.class);
+        mIsWeekly = dataSnapshot.child("mIsWeekly").getValue(Boolean.class);
         mDaysOfWeek = dataSnapshot.child("daysOfWeek").getValue(Integer.class);
         mMinuteOfHour = dataSnapshot.child("mMinuteOfHour").getValue(Integer.class);
         mHourOfDay = dataSnapshot.child("mHourOfDay").getValue(Integer.class);
         mDayOfMonth = dataSnapshot.child("mDayOfMonth").getValue(Integer.class);
         mMonthOfYear = dataSnapshot.child("mMonthOfYear").getValue(Integer.class);
         mYear = dataSnapshot.child("mYear").getValue(Integer.class);
-        mIsWeekly = dataSnapshot.child("mIsWeekly").getValue(Boolean.class);
         mTrip = dataSnapshot.child("mTrip").getValue(Trip.class);
         mStopTime = dataSnapshot.child("mStopTime").getValue(StopTime.class);
     }
