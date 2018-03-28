@@ -18,8 +18,8 @@ import java.util.ArrayList;
 public class Notification implements Parcelable {
 
     private String mName;
-    private boolean mIsActive;
-    private boolean mIsWeekly;
+    private boolean mActive;
+    private boolean mWeekly;
     private int mDaysOfWeek;
     private int mMinuteOfHour;
     private int mHourOfDay;
@@ -38,8 +38,8 @@ public class Notification implements Parcelable {
 
     protected Notification(Parcel in) {
         mName = in.readString();
-        mIsActive = in.readByte() != 0;
-        mIsWeekly = in.readByte() != 0;
+        mActive = in.readByte() != 0;
+        mWeekly = in.readByte() != 0;
         mDaysOfWeek = in.readInt();
         mMinuteOfHour = in.readInt();
         mHourOfDay = in.readInt();
@@ -72,8 +72,8 @@ public class Notification implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mName);
-        dest.writeByte((byte) (mIsActive ? 1 : 0 ));
-        dest.writeByte((byte) (mIsWeekly ? 1 : 0 ));
+        dest.writeByte((byte) (mActive ? 1 : 0 ));
+        dest.writeByte((byte) (mWeekly ? 1 : 0 ));
         dest.writeInt(mDaysOfWeek);
         dest.writeInt(mMinuteOfHour);
         dest.writeInt(mHourOfDay);
@@ -106,19 +106,19 @@ public class Notification implements Parcelable {
     }
 
     public void setIsActive(boolean isActive){
-        this.mIsActive = isActive;
+        this.mActive = isActive;
     }
 
     public boolean isActive(){
-        return mIsActive;
+        return mActive;
     }
 
     public void setIsWeekly(boolean isWeekly){
-        this.mIsWeekly = isWeekly;
+        this.mWeekly = isWeekly;
     }
 
     public boolean isWeekly(){
-        return mIsWeekly;
+        return mWeekly;
     }
 
     public void setDateTime(DateTime dateTime) {
@@ -195,8 +195,8 @@ public class Notification implements Parcelable {
 
     private void fromMap(DataSnapshot dataSnapshot) {
         mName = dataSnapshot.getKey();
-        mIsActive = dataSnapshot.child("mIsActive").getValue(Boolean.class);
-        mIsWeekly = dataSnapshot.child("mIsWeekly").getValue(Boolean.class);
+        mActive = dataSnapshot.child("mActive").getValue(Boolean.class);
+        mWeekly = dataSnapshot.child("mWeekly").getValue(Boolean.class);
         mDaysOfWeek = dataSnapshot.child("daysOfWeek").getValue(Integer.class);
         mMinuteOfHour = dataSnapshot.child("mMinuteOfHour").getValue(Integer.class);
         mHourOfDay = dataSnapshot.child("mHourOfDay").getValue(Integer.class);

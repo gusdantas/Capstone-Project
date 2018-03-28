@@ -9,18 +9,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.gustavohidalgo.quaiscalingudum.R;
-import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnRecyclerViewClickListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
-import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
-import java.util.ArrayList;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import butterknife.OnCheckedChanged;
 
 /**
  * Created by hdant on 14/02/2018.
@@ -28,14 +26,13 @@ import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class NotificationsAdapter extends
         RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder>  {
-    private Context mContext;
     private List<Notification> mNotificationList;
+    private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
 
 
-    public NotificationsAdapter(Context context, List<Notification> notificationList){
-        this.mContext = context;
+    public NotificationsAdapter(List<Notification> notificationList, OnRecyclerViewClickListener clickListener){
         this.mNotificationList = notificationList;
-
+        this.mOnRecyclerViewClickListener = clickListener;
     }
 
     @Override
@@ -43,13 +40,14 @@ public class NotificationsAdapter extends
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.notification_item, parent, false);
-        return new NotificationViewHolder(view);
+        return new NotificationViewHolder(view, mOnRecyclerViewClickListener);
     }
 
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
         Notification notification = mNotificationList.get(position);
         holder.mNameSW.setText(notification.getName());
+        holder.mNameSW.setChecked(notification.isActive());
         holder.mLineCodeTV.setText(notification.getTrip().getRouteId());
         holder.mLineNameTV.setText(notification.getTrip().getTripHeadsign());
         holder.mDepartTimeTV.setText("");
@@ -59,13 +57,14 @@ public class NotificationsAdapter extends
 
     }
 
+
     @Override
     public int getItemCount() {
         return mNotificationList.size();
     }
 
-    public static class NotificationViewHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener{
+    public static class NotificationViewHolder extends RecyclerView.ViewHolder {
+        private WeakReference<OnRecyclerViewClickListener> listenerRef;
         @BindView(R.id.name_switch)
         Switch mNameSW;
         @BindView(R.id.line_code_tv)
@@ -82,15 +81,18 @@ public class NotificationsAdapter extends
         TextView mArrivePlaceTV;
 
 
-        public NotificationViewHolder(View itemView) {
+        public NotificationViewHolder(View itemView, OnRecyclerViewClickListener clickListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
+            listenerRef = new WeakReference<>(clickListener);
+            //itemView.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View v) {
-
+        @OnCheckedChanged(R.id.name_switch)
+        void changeActive(){
+            listenerRef.get().onChangeActive(getAdapterPosition());
         }
+
+
     }
 }

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,6 +50,8 @@ public class SetNotificationsFragment extends Fragment {
     TextView mLineNameTV;
     @BindView(R.id.line_time_details_tv)
     TextClock mArrivalTime;
+    @BindView(R.id.notification_active_sw)
+    Switch mNotificationActiveSW;
     @BindView(R.id.notification_name_et)
     EditText mNotificationName;
     @BindView(R.id.notifications_added_rv)
@@ -111,6 +114,7 @@ public class SetNotificationsFragment extends Fragment {
                 Toast.makeText(getContext(), "this name already exists", Toast.LENGTH_SHORT).show();
             } else {
                 mNotification.setName(mNotificationName.getText().toString());
+                mNotification.setIsActive(mNotificationActiveSW.isChecked());
                 mListener.toFinishCreatingNotification(mNotification);
             }
         }

@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
+import com.gustavohidalgo.quaiscalingudum.interfaces.OnRecyclerViewClickListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
 import com.squareup.picasso.Picasso;
 
@@ -255,7 +256,14 @@ public class MainActivity extends AppCompatActivity
         };
         mDatabaseReference.addChildEventListener(mMenuEventListener);
 
-        mNotificationsAdapter = new NotificationsAdapter(this, mNotificationList);
+        mNotificationsAdapter = new NotificationsAdapter(mNotificationList, new OnRecyclerViewClickListener() {
+            @Override
+            public void onChangeActive(int position) {
+                boolean actual = mNotificationList.get(position).isActive();
+                mNotificationList.get(position).setIsActive(!actual);
+                writeNewNotification(mNotificationList.get(position));
+            }
+        });
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mNotificationRV.setLayoutManager(mLayoutManager);
         mNotificationRV.setAdapter(mNotificationsAdapter);
