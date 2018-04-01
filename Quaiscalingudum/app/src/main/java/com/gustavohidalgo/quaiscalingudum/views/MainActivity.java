@@ -34,6 +34,8 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnRecyclerViewClickListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.StopTime;
+import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -180,10 +182,8 @@ public class MainActivity extends AppCompatActivity
                 if (sUser != null) {
                     // Already exists and it's logged.
                     updateUserInformationUI();
-                    //mDatabase = FirebaseDatabase.getInstance().getReference();
                 } else {
                     // First time sUser.
-
                     List<AuthUI.IdpConfig> providers = Arrays.asList(
                             new AuthUI.IdpConfig.EmailBuilder().build(),
                             new AuthUI.IdpConfig.GoogleBuilder()
@@ -204,10 +204,6 @@ public class MainActivity extends AppCompatActivity
 
     private void goHome() {
         Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
-        // Write a message to the database
-        mNotificationList = new ArrayList<>();
-        mNotificationNameList = new ArrayList<>();
-        // mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
     }
 
     private void updateUserInformationUI() {
@@ -231,22 +227,31 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                refreshNotificationList(dataSnapshot.getValue(Notification.class), false);
+                Notification value = dataSnapshot.getValue(Notification.class);
+                mNotificationList.add(value);
+                mNotificationNameList.add(value.getName());
+                mNotificationsAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
+                Notification value = dataSnapshot.getValue(Notification.class);
+                int index = mNotificationNameList.indexOf(value.getName());
+                mNotificationList.set(index, value);
+                mNotificationsAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
+                Notification value = dataSnapshot.getValue(Notification.class);
+                int index = mNotificationNameList.indexOf(value.getName());
+                mNotificationNameList.remove(index);
+                mNotificationList.remove(index);
+                mNotificationsAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                refreshNotificationList(dataSnapshot.getValue(Notification.class), true);
             }
 
             @Override
@@ -258,10 +263,24 @@ public class MainActivity extends AppCompatActivity
 
         mNotificationsAdapter = new NotificationsAdapter(mNotificationList, new OnRecyclerViewClickListener() {
             @Override
-            public void onChangeActive(int position) {
-                boolean actual = mNotificationList.get(position).isActive();
-                mNotificationList.get(position).setIsActive(!actual);
-                writeNewNotification(mNotificationList.get(position));
+            public void onTurnOn(int position) {
+                int actual = mNotificationList.get(position).getActive();
+                if (actual == NOT_ACTIVE) {
+                    actual = IS_ACTIVE;
+                    mNotificationList.get(position).setActive(actual);
+                    writeNewNotification(mNotificationList.get(position));
+                }
+            }
+
+            @Override
+            public void onTurnOff(int position) {
+                int actual = mNotificationList.get(position).getActive();
+                if (actual == IS_ACTIVE) {
+                    actual = NOT_ACTIVE;
+                    mNotificationList.get(position).setActive(actual);
+                    writeNewNotification(mNotificationList.get(position));
+                }
+
             }
         });
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -289,15 +308,5 @@ public class MainActivity extends AppCompatActivity
     private void writeNewNotification(Notification notification) {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
         mDatabaseReference.child(notification.getName()).setValue(notification);
-    }
-
-    private void refreshNotificationList(Notification value, boolean needsClear) {
-        if (needsClear) {
-            mNotificationList.clear();
-            mNotificationNameList.clear();
-        }
-        mNotificationList.add(value);
-        mNotificationNameList.add(value.getName());
-        mNotificationsAdapter.notifyDataSetChanged();
     }
 }

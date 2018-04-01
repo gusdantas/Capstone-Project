@@ -30,7 +30,7 @@ public class AddNotificationActivity extends AppCompatActivity
             if (mNotification == null) {
                 getSupportActionBar().setTitle("New notification");
                 mNotification = new Notification();
-                mNotification.setIsWeekly(false);
+                mNotification.setWeekly(NOT_WEEKLY);
             } else {
                 getSupportActionBar().setTitle("Edit notification");
             }
@@ -78,7 +78,6 @@ public class AddNotificationActivity extends AppCompatActivity
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(NOTIFICATION, notification);
-        //intent.putExtra(NOTIFICATION, notification);
         intent.putExtra(NOTIFICATION, bundle);
         startActivity(intent);
     }

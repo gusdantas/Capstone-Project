@@ -22,6 +22,7 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnSetDateListener;
 import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
@@ -149,69 +150,84 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
         if(dayCheckBox.isChecked()) {
             switch (dayCheckBox.getId()) {
                 case R.id.sun_cb:
-                    mNotification.setDayOfWeek(SUNDAY);
+                    NotificationUtils.setNewDaysOfWeek(SUNDAY, mNotification);
+                    // mNotification.setDayOfWeek(SUNDAY);
                     mWeeklyDays.set(0, "Sundays");
                     break;
                 case R.id.mon_cb:
-                    mNotification.setDayOfWeek(MONDAY);
+                    NotificationUtils.setNewDaysOfWeek(MONDAY, mNotification);
+                    //mNotification.setDayOfWeek(MONDAY);
                     mWeeklyDays.set(1, "Mondays");
                     break;
                 case R.id.tue_cb:
-                    mNotification.setDayOfWeek(TUESDAY);
+                    NotificationUtils.setNewDaysOfWeek(TUESDAY, mNotification);
+                    //mNotification.setDayOfWeek(TUESDAY);
                     mWeeklyDays.set(2, "Tuesdays");
                     break;
                 case R.id.wed_cb:
-                    mNotification.setDayOfWeek(WEDNESDAY);
+                    NotificationUtils.setNewDaysOfWeek(WEDNESDAY, mNotification);
+                    //mNotification.setDayOfWeek(WEDNESDAY);
                     mWeeklyDays.set(3, "Wednesdays");
                     break;
                 case R.id.thu_cb:
-                    mNotification.setDayOfWeek(THURSDAY);
+                    NotificationUtils.setNewDaysOfWeek(THURSDAY, mNotification);
+                    //mNotification.setDayOfWeek(THURSDAY);
                     mWeeklyDays.set(4, "Thursdays");
                     break;
                 case R.id.fri_cb:
-                    mNotification.setDayOfWeek(FRIDAY);
+                    NotificationUtils.setNewDaysOfWeek(FRIDAY, mNotification);
+                    //mNotification.setDayOfWeek(FRIDAY);
                     mWeeklyDays.set(5, "Fridays");
                     break;
                 case R.id.sat_cb:
-                    mNotification.setDayOfWeek(SATURDAY);
+                    NotificationUtils.setNewDaysOfWeek(SATURDAY, mNotification);
+                    //mNotification.setDayOfWeek(SATURDAY);
                     mWeeklyDays.set(6, "Saturdays");
                     break;
             }
         } else {
             switch (dayCheckBox.getId()) {
                 case R.id.sun_cb:
-                    mNotification.resetDayOfWeek(SUNDAY);
+                    NotificationUtils.resetDaysOfWeek(SUNDAY, mNotification);
+                    //mNotification.resetDayOfWeek(SUNDAY);
                     mWeeklyDays.set(0, "");
                     break;
                 case R.id.mon_cb:
-                    mNotification.resetDayOfWeek(MONDAY);
+                    NotificationUtils.resetDaysOfWeek(MONDAY, mNotification);
+                    //mNotification.resetDayOfWeek(MONDAY);
                     mWeeklyDays.set(1, "");
                     break;
                 case R.id.tue_cb:
-                    mNotification.resetDayOfWeek(TUESDAY);
+                    NotificationUtils.resetDaysOfWeek(TUESDAY, mNotification);
+                    //mNotification.resetDayOfWeek(TUESDAY);
                     mWeeklyDays.set(2, "");
                     break;
                 case R.id.wed_cb:
-                    mNotification.resetDayOfWeek(WEDNESDAY);
+                    NotificationUtils.resetDaysOfWeek(WEDNESDAY, mNotification);
+                    //mNotification.resetDayOfWeek(WEDNESDAY);
                     mWeeklyDays.set(3, "");
                     break;
                 case R.id.thu_cb:
-                    mNotification.resetDayOfWeek(THURSDAY);
+                    NotificationUtils.resetDaysOfWeek(THURSDAY, mNotification);
+                    //mNotification.resetDayOfWeek(THURSDAY);
                     mWeeklyDays.set(4, "");
                     break;
                 case R.id.fri_cb:
-                    mNotification.resetDayOfWeek(FRIDAY);
+                    NotificationUtils.resetDaysOfWeek(FRIDAY, mNotification);
+                    //mNotification.resetDayOfWeek(FRIDAY);
                     mWeeklyDays.set(5, "");
                     break;
                 case R.id.sat_cb:
-                    mNotification.resetDayOfWeek(SATURDAY);
+                    NotificationUtils.resetDaysOfWeek(SATURDAY, mNotification);
+                    //mNotification.resetDayOfWeek(SATURDAY);
                     mWeeklyDays.set(6, "");
                     break;
             }
         }
 
         if(mNotification.getDaysOfWeek() > 0){
-            mNotification.setIsWeekly(true);
+            //mNotification.setIsWeekly(true);
+            mNotification.setWeekly(IS_WEEKLY);
             StringBuilder stringBuilder = new StringBuilder();
             for (String day : mWeeklyDays) {
                 if (!day.equals("")){
@@ -221,7 +237,7 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
             stringBuilder.append("weekly.");
             mTimeTV.setText(stringBuilder.toString());
         } else {
-            mNotification.setIsWeekly(false);
+            mNotification.setWeekly(NOT_WEEKLY);
             String time = mDateTime.toString(DateTimeFormat.fullDate()) + " only.";
             mTimeTV.setText(time);
         }
@@ -236,7 +252,7 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
         mThursdayCB.setChecked(false);
         mFridayCB.setChecked(false);
         mSaturdayCB.setChecked(false);
-        mNotification.setIsWeekly(false);
+        mNotification.setWeekly(NOT_WEEKLY);
         mDateTime = new DateTime(year, month, dayOfMonth, mDateTime.getHourOfDay(),
                 mDateTime.getMinuteOfHour());
         String time = mDateTime.toString(DateTimeFormat.fullDate()) + " only.";

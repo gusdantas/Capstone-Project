@@ -114,7 +114,7 @@ public class SetNotificationsFragment extends Fragment {
                 Toast.makeText(getContext(), "this name already exists", Toast.LENGTH_SHORT).show();
             } else {
                 mNotification.setName(mNotificationName.getText().toString());
-                mNotification.setIsActive(mNotificationActiveSW.isChecked());
+                mNotification.setActive(booleanToInt(mNotificationActiveSW.isChecked()));
                 mListener.toFinishCreatingNotification(mNotification);
             }
         }
@@ -142,5 +142,9 @@ public class SetNotificationsFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private int booleanToInt(boolean bool){
+        return (bool) ? 1:0;
     }
 }

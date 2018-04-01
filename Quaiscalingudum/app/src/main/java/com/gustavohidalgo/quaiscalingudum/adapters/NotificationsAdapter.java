@@ -47,7 +47,7 @@ public class NotificationsAdapter extends
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
         Notification notification = mNotificationList.get(position);
         holder.mNameSW.setText(notification.getName());
-        holder.mNameSW.setChecked(notification.isActive());
+        holder.mNameSW.setChecked(intToBoolean(notification.getActive()));
         holder.mLineCodeTV.setText(notification.getTrip().getRouteId());
         holder.mLineNameTV.setText(notification.getTrip().getTripHeadsign());
         holder.mDepartTimeTV.setText("");
@@ -90,9 +90,15 @@ public class NotificationsAdapter extends
 
         @OnCheckedChanged(R.id.name_switch)
         void changeActive(){
-            listenerRef.get().onChangeActive(getAdapterPosition());
+            if (mNameSW.isChecked()) {
+                listenerRef.get().onTurnOn(getAdapterPosition());
+            } else {
+                listenerRef.get().onTurnOff(getAdapterPosition());
+            }
         }
+    }
 
-
+    private boolean intToBoolean(int integer){
+        return integer != 0;
     }
 }

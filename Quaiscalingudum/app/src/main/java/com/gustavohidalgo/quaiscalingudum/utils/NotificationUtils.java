@@ -24,7 +24,7 @@ public class NotificationUtils {
         int hourOfDay = notification.getHourOfDay();
         int minuteOfHour = notification.getMinuteOfHour();
 
-        if(notification.isWeekly()) {
+        if(notification.getWeekly() == 1) {
             if ((daysOfWeek &= 0b0111110) > 0) {
                 serviceIdd.add("U__");
                 serviceIdd.add("U_D");
@@ -92,5 +92,17 @@ public class NotificationUtils {
         int hourOfDay = notification.getHourOfDay();
         int minuteOfHour = notification.getMinuteOfHour();
         return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour);
+    }
+
+    public static void setNewDaysOfWeek(int daysOfWeek, Notification notification) {
+        int oldDaysOfWeek = notification.getDaysOfWeek();
+        daysOfWeek = oldDaysOfWeek |= daysOfWeek;
+        notification.setDaysOfWeek(daysOfWeek);
+    }
+
+    public static void resetDaysOfWeek(int daysOfWeek, Notification notification) {
+        int oldDaysOfWeek = notification.getDaysOfWeek();
+        daysOfWeek = oldDaysOfWeek &= ~daysOfWeek;
+        notification.setDaysOfWeek(daysOfWeek);
     }
 }

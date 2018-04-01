@@ -21,6 +21,11 @@ public final class Constants {
     public static final byte FRIDAY    = 0b0000010;
     public static final byte SATURDAY  = 0b0000001;
 
+    public static final int NOT_ACTIVE = 0;
+    public static final int IS_ACTIVE = 1;
+    public static final int NOT_WEEKLY = 0;
+    public static final int IS_WEEKLY = 1;
+
     public static final int HOUR = 0;
     public static final int MINUTE = 1;
     public static final int SECOND = 2;

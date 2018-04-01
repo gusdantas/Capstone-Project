@@ -2,14 +2,12 @@ package com.gustavohidalgo.quaiscalingudum.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by gustavo.hidalgo on 18/02/06.
@@ -17,17 +15,19 @@ import java.util.ArrayList;
 
 public class Notification implements Parcelable {
 
-    private String mName;
-    private boolean mActive;
-    private boolean mWeekly;
-    private int mDaysOfWeek;
-    private int mMinuteOfHour;
-    private int mHourOfDay;
-    private int mDayOfMonth;
-    private int mMonthOfYear;
-    private int mYear;
-    private Trip mTrip;
-    private StopTime mStopTime;
+    private String name;
+//    private Boolean active;
+//    private Boolean weekly;
+    private int active;
+    private int weekly;
+    private int daysOfWeek;
+    private int minuteOfHour;
+    private int hourOfDay;
+    private int dayOfMonth;
+    private int monthOfYear;
+    private int year;
+    private Trip trip;
+    private StopTime stopTime;
 
     public Notification() {
     }
@@ -37,18 +37,20 @@ public class Notification implements Parcelable {
     }
 
     protected Notification(Parcel in) {
-        mName = in.readString();
-        mActive = in.readByte() != 0;
-        mWeekly = in.readByte() != 0;
-        mDaysOfWeek = in.readInt();
-        mMinuteOfHour = in.readInt();
-        mHourOfDay = in.readInt();
-        mDayOfMonth = in.readInt();
-        mMonthOfYear = in.readInt();
-        mYear = in.readInt();
-        mTrip = new Trip(in.readString(), in.readString(), in.readString(), in.readString(),
+        name = in.readString();
+//        active = in.readByte() != 0;
+//        weekly = in.readByte() != 0;
+        active = in.readInt();
+        weekly = in.readInt();
+        daysOfWeek = in.readInt();
+        minuteOfHour = in.readInt();
+        hourOfDay = in.readInt();
+        dayOfMonth = in.readInt();
+        monthOfYear = in.readInt();
+        year = in.readInt();
+        trip = new Trip(in.readString(), in.readString(), in.readString(), in.readString(),
                 in.readString(), in.readString());
-        mStopTime = new StopTime(in.readString(), in.readString(), in.readString(), in.readString(),
+        stopTime = new StopTime(in.readString(), in.readString(), in.readString(), in.readString(),
                 in.readString());
     }
 
@@ -71,54 +73,76 @@ public class Notification implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mName);
-        dest.writeByte((byte) (mActive ? 1 : 0 ));
-        dest.writeByte((byte) (mWeekly ? 1 : 0 ));
-        dest.writeInt(mDaysOfWeek);
-        dest.writeInt(mMinuteOfHour);
-        dest.writeInt(mHourOfDay);
-        dest.writeInt(mDayOfMonth);
-        dest.writeInt(mMonthOfYear);
-        dest.writeInt(mYear);
-        dest.writeString(mTrip.getRouteId());
-        dest.writeString(mTrip.getServiceId());
-        dest.writeString(mTrip.getTripId());
-        dest.writeString(mTrip.getTripHeadsign());
-        dest.writeString(mTrip.getDirectionId());
-        dest.writeString(mTrip.getShapeId());
-        dest.writeString(mStopTime.getTripId());
-        dest.writeString(mStopTime.getArrivalTime());
-        dest.writeString(mStopTime.getDepartureTime());
-        dest.writeString(mStopTime.getStopId());
-        dest.writeString(mStopTime.getStopSequence());
+        dest.writeString(name);
+//        dest.writeByte((byte) (active ? 1 : 0 ));
+//        dest.writeByte((byte) (weekly ? 1 : 0 ));
+        dest.writeInt(active);
+        dest.writeInt(weekly);
+        dest.writeInt(daysOfWeek);
+        dest.writeInt(minuteOfHour);
+        dest.writeInt(hourOfDay);
+        dest.writeInt(dayOfMonth);
+        dest.writeInt(monthOfYear);
+        dest.writeInt(year);
+        dest.writeString(trip.getRouteId());
+        dest.writeString(trip.getServiceId());
+        dest.writeString(trip.getTripId());
+        dest.writeString(trip.getTripHeadsign());
+        dest.writeString(trip.getDirectionId());
+        dest.writeString(trip.getShapeId());
+        dest.writeString(stopTime.getTripId());
+        dest.writeString(stopTime.getArrivalTime());
+        dest.writeString(stopTime.getDepartureTime());
+        dest.writeString(stopTime.getStopId());
+        dest.writeString(stopTime.getStopSequence());
     }
 
-    public void setDayOfWeek(int dayOfWeek) {
-        this.mDaysOfWeek |= dayOfWeek;
+    public String getName() {
+        return name;
     }
 
-    public void resetDayOfWeek(int dayOfWeek) {
-        this.mDaysOfWeek &= ~dayOfWeek;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+//    public Boolean getActive(){
+//        return active;
+//    }
+//
+//    public void setActive(Boolean active){
+//        this.active = active;
+//    }
+//
+//    public Boolean getWeekly(){
+//        return weekly;
+//    }
+//
+//    public void setWeekly(Boolean weekly){
+//        this.weekly = weekly;
+//    }
+
+    public int getActive() {
+        return active;
+    }
+
+    public void setActive(int active) {
+        this.active = active;
+    }
+
+    public int getWeekly() {
+        return weekly;
+    }
+
+    public void setWeekly(int weekly) {
+        this.weekly = weekly;
     }
 
     public int getDaysOfWeek() {
-        return mDaysOfWeek;
+        return daysOfWeek;
     }
 
-    public void setIsActive(boolean isActive){
-        this.mActive = isActive;
-    }
-
-    public boolean isActive(){
-        return mActive;
-    }
-
-    public void setIsWeekly(boolean isWeekly){
-        this.mWeekly = isWeekly;
-    }
-
-    public boolean isWeekly(){
-        return mWeekly;
+    public void setDaysOfWeek(int daysOfWeek) {
+        this.daysOfWeek = daysOfWeek;
     }
 
     public void setDateTime(DateTime dateTime) {
@@ -130,81 +154,77 @@ public class Notification implements Parcelable {
     }
 
     public int getMinuteOfHour() {
-        return mMinuteOfHour;
+        return minuteOfHour;
     }
 
     public void setMinuteOfHour(int minuteOfHour) {
-        this.mMinuteOfHour = minuteOfHour;
+        this.minuteOfHour = minuteOfHour;
     }
 
     public int getHourOfDay() {
-        return mHourOfDay;
+        return hourOfDay;
     }
 
     public void setHourOfDay(int hourOfDay) {
-        this.mHourOfDay = hourOfDay;
+        this.hourOfDay = hourOfDay;
     }
 
     public int getDayOfMonth() {
-        return mDayOfMonth;
+        return dayOfMonth;
     }
 
     public void setDayOfMonth(int dayOfMonth) {
-        this.mDayOfMonth = dayOfMonth;
+        this.dayOfMonth = dayOfMonth;
     }
 
     public int getMonthOfYear() {
-        return mMonthOfYear;
+        return monthOfYear;
     }
 
     public void setMonthOfYear(int monthOfYear) {
-        this.mMonthOfYear = monthOfYear;
+        this.monthOfYear = monthOfYear;
     }
 
     public int getYear() {
-        return mYear;
+        return year;
     }
 
     public void setYear(int year) {
-        this.mYear = year;
+        this.year = year;
     }
 
     public void setTrip(Trip trip){
-        this.mTrip = trip;
+        this.trip = trip;
     }
 
     public Trip getTrip(){
-        return mTrip;
+        return trip;
     }
 
     public void setStopTime(StopTime stopTime){
-        this.mStopTime = stopTime;
+        this.stopTime = stopTime;
     }
 
     public StopTime getStopTime(){
-        return mStopTime;
+        return stopTime;
     }
 
-    public String getName() {
-        return mName;
-    }
 
-    public void setName(String name) {
-        this.mName = name;
-    }
 
     private void fromMap(DataSnapshot dataSnapshot) {
-        mName = dataSnapshot.getKey();
-        mActive = dataSnapshot.child("mActive").getValue(Boolean.class);
-        mWeekly = dataSnapshot.child("mWeekly").getValue(Boolean.class);
-        mDaysOfWeek = dataSnapshot.child("daysOfWeek").getValue(Integer.class);
-        mMinuteOfHour = dataSnapshot.child("mMinuteOfHour").getValue(Integer.class);
-        mHourOfDay = dataSnapshot.child("mHourOfDay").getValue(Integer.class);
-        mDayOfMonth = dataSnapshot.child("mDayOfMonth").getValue(Integer.class);
-        mMonthOfYear = dataSnapshot.child("mMonthOfYear").getValue(Integer.class);
-        mYear = dataSnapshot.child("mYear").getValue(Integer.class);
-        mTrip = dataSnapshot.child("mTrip").getValue(Trip.class);
-        mStopTime = dataSnapshot.child("mStopTime").getValue(StopTime.class);
+        name = dataSnapshot.getKey();
+//        active = dataSnapshot.child("active").getValue(Boolean.class);
+//        weekly = dataSnapshot.child("weekly").getValue(Boolean.class);
+        active = dataSnapshot.child("active").getValue(Integer.class);
+        weekly = dataSnapshot.child("weekly").getValue(Integer.class);
+        daysOfWeek = dataSnapshot.child("daysOfWeek").getValue(Integer.class);
+        minuteOfHour = dataSnapshot.child("minuteOfHour").getValue(Integer.class);
+        hourOfDay = dataSnapshot.child("hourOfDay").getValue(Integer.class);
+        dayOfMonth = dataSnapshot.child("dayOfMonth").getValue(Integer.class);
+        monthOfYear = dataSnapshot.child("monthOfYear").getValue(Integer.class);
+        year = dataSnapshot.child("year").getValue(Integer.class);
+        trip = dataSnapshot.child("trip").getValue(Trip.class);
+        stopTime = dataSnapshot.child("stopTime").getValue(StopTime.class);
     }
 
 }

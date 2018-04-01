@@ -51,13 +51,10 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     private static final int ID_STOP_TIMES_LOADER = 12;
 
     private Notification mNotification;
-    //private String[] mLine;
     private Trip mTrip;
     private Cursor mStopTimesFiltered, mFrequenciesFiltered;
     private DateTime mDateTime;
-    //private String mTripId = "";
     SimpleCursorAdapter mSelectStopAdapter;
-    //private int mPosition = RecyclerView.NO_POSITION;
 
     @BindView(R.id.line_code_tv)
     TextView mLineCodeTV;
@@ -98,9 +95,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNotification = getArguments().getParcelable(NOTIFICATION);
-            //mLine = mNotification.getLine();
             mTrip = mNotification.getTrip();
-            //mTripId = mLine[2];
             getLoaderManager().initLoader(ID_STOP_TIMES_LOADER, null, this);
             getLoaderManager().initLoader(ID_FREQUENCIES_LOADER, null, this);
         }
@@ -112,8 +107,6 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_details, container, false);
         ButterKnife.bind(this, view);
-//        mLineCodeTV.setText(mLine[TRIPS_ROUTE_ID].replaceAll("\"", ""));
-//        mLineNameTV.setText(mLine[TRIPS_TRIP_HEADSIGN].replaceAll("\"", ""));
         mLineCodeTV.setText(mTrip.getRouteId().replaceAll("\"", ""));
         mLineNameTV.setText(mTrip.getTripHeadsign().replaceAll("\"", ""));
         String[] strings = {GtfsContract.StopTimesEntry.STOP_ID,
@@ -176,13 +169,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
 
         mStopTimesFiltered.moveToPosition(position);
-//        String[] desiredStop = {
-//                mStopTimesFiltered.getString(STOP_TIMES__ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
-//                mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
-//                mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
+
         mNotification.setStopTime(new StopTime(
                 mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
                 mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
@@ -196,7 +183,6 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         DateTime refSaidaTerminal = new DateTime(0, 1, 1, 0,
                 refSaidaTerminalTabela[MINUTE], 0);
 
-        //int[] refChegadaPontoTabela = stringToTime(mNotification.getStopTime()[STOP_TIMES_ARRIVAL_TIME]);
         int[] refChegadaPontoTabela = stringToTime(mNotification.getStopTime().getArrivalTime());
         DateTime refChegadaPonto = new DateTime(0, 1, 1,
                 (refChegadaPontoTabela[HOUR] - refSaidaTerminalTabela[HOUR]), refChegadaPontoTabela[MINUTE],
@@ -260,6 +246,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 Integer.parseInt(choosenTime[MINUTE]),0);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri queryUri;
@@ -316,7 +303,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mSelectStopAdapter.swapCursor(null);
     }
 }

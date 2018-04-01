@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -96,7 +97,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_pick_line, container, false);
@@ -139,13 +140,6 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         return true;
     }
 
-//    @Override
-//    public void tripSelected(String[] trip) {
-//        mLineCodeSelectedTV.setText(trip[TRIPS_ROUTE_ID]);
-//        mLineNameSelectedTV.setText(trip[TRIPS_TRIP_HEADSIGN]);
-//        mNotification.setLine(trip);
-//    }
-
     @Override
     public void tripSelected(Trip trip) {
         mLineCodeSelectedTV.setText(trip.getRouteId());
@@ -167,6 +161,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
         }
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
