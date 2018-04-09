@@ -22,7 +22,7 @@ import com.gustavohidalgo.quaiscalingudum.adapters.SearchLineAdapter;
 import com.gustavohidalgo.quaiscalingudum.data.GtfsContract;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnTripSelectListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
 import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
@@ -31,8 +31,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,7 +57,7 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     @BindView(R.id.line_name_selected_tv)
     TextView mLineNameSelectedTV;
 
-    private Notification mNotification;
+    private BusNotification mBusNotification;
     private SearchLineAdapter mSearchLineAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
     private String mLineQuery = "";
@@ -75,13 +73,13 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param notification Parameter 1.
+     * @param busNotification Parameter 1.
      * @return A new instance of fragment PickLineFragment.
      */
-    public static PickLineFragment newInstance(Notification notification) {
+    public static PickLineFragment newInstance(BusNotification busNotification) {
         PickLineFragment fragment = new PickLineFragment();
         Bundle args = new Bundle();
-        args.putParcelable(NOTIFICATION, notification);
+        args.putParcelable(NOTIFICATION, busNotification);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,8 +88,8 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mNotification = getArguments().getParcelable(NOTIFICATION);
-            mDaysQuery = NotificationUtils.getServiceIds(mNotification);
+            mBusNotification = getArguments().getParcelable(NOTIFICATION);
+            mDaysQuery = NotificationUtils.getServiceIds(mBusNotification);
         }
         getLoaderManager().initLoader(ID_TRIPS_LOADER, null, this);
     }
@@ -144,20 +142,20 @@ public class PickLineFragment extends Fragment implements SearchView.OnQueryText
     public void tripSelected(Trip trip) {
         mLineCodeSelectedTV.setText(trip.getRouteId());
         mLineNameSelectedTV.setText(trip.getTripHeadsign());
-        mNotification.setTrip(trip);
+        mBusNotification.setTrip(trip);
     }
 
     @OnClick(R.id.next_detail_bt)
     public void onNextPressed() {
-        if (mListener != null && mNotification.getTrip() != null) {
-            mListener.toDetails(mNotification);
+        if (mListener != null && mBusNotification.getTrip() != null) {
+            mListener.toDetails(mBusNotification);
         }
     }
 
     @OnClick(R.id.back_eta_bt)
     public void onBackPressed() {
         if (mListener != null) {
-            mListener.toEta(mNotification);
+            mListener.toEta(mBusNotification);
         }
     }
 

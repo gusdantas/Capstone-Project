@@ -19,6 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,10 +39,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnRecyclerViewClickListener;
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
-import com.gustavohidalgo.quaiscalingudum.models.StopTime;
-import com.gustavohidalgo.quaiscalingudum.models.Trip;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
+import com.gustavohidalgo.quaiscalingudum.services.NotificationJobService;
+import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
+import com.gustavohidalgo.quaiscalingudum.utils.ParcelableUtils;
 import com.squareup.picasso.Picasso;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,8 +63,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private static FirebaseUser sUser;
 
-    Notification mNotification;
-    List<Notification> mNotificationList;
+    BusNotification mBusNotification;
+    List<BusNotification> mBusNotificationList;
     ArrayList<String> mNotificationNameList;
     DatabaseReference mDatabaseReference;
     private ChildEventListener mMenuEventListener;
@@ -103,11 +112,16 @@ public class MainActivity extends AppCompatActivity
             Intent intent = getIntent();
             Bundle bundle = intent.getBundleExtra(NOTIFICATION);
             if (bundle != null) {
-                mNotification = bundle.getParcelable(NOTIFICATION);
-                writeNewNotification(mNotification);
+                mBusNotification = bundle.getParcelable(NOTIFICATION);
+
+                if (mBusNotification.getActive() == 1){
+                    int secondsToAlarm = NotificationUtils
+                            .secondsToAlarm(mBusNotification).get(ALARM_TIME);
+                    NotificationUtils.scheduleJob(this, mBusNotification, secondsToAlarm);
+                }
+                writeNewNotification(mBusNotification);
             }
         }
-
     }
 
     @Override
@@ -220,33 +234,35 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        mNotificationList = new ArrayList<>();
+        mBusNotificationList = new ArrayList<>();
         mNotificationNameList = new ArrayList<>();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
         mMenuEventListener = new ChildEventListener() {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Notification value = dataSnapshot.getValue(Notification.class);
-                mNotificationList.add(value);
+                BusNotification value = dataSnapshot.getValue(BusNotification.class);
+                mBusNotificationList.add(value);
                 mNotificationNameList.add(value.getName());
                 mNotificationsAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                Notification value = dataSnapshot.getValue(Notification.class);
+                BusNotification value = dataSnapshot.getValue(BusNotification.class);
                 int index = mNotificationNameList.indexOf(value.getName());
-                mNotificationList.set(index, value);
+                mBusNotificationList.set(index, value);
                 mNotificationsAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Notification value = dataSnapshot.getValue(Notification.class);
+                BusNotification value = dataSnapshot.getValue(BusNotification.class);
                 int index = mNotificationNameList.indexOf(value.getName());
                 mNotificationNameList.remove(index);
-                mNotificationList.remove(index);
+                NotificationUtils.deleteJob(getApplicationContext(),
+                        mBusNotificationList.get(index));
+                mBusNotificationList.remove(index);
                 mNotificationsAdapter.notifyDataSetChanged();
             }
 
@@ -261,29 +277,41 @@ public class MainActivity extends AppCompatActivity
         };
         mDatabaseReference.addChildEventListener(mMenuEventListener);
 
-        mNotificationsAdapter = new NotificationsAdapter(mNotificationList, new OnRecyclerViewClickListener() {
+        mNotificationsAdapter = new NotificationsAdapter(mBusNotificationList,
+                new OnRecyclerViewClickListener() {
             @Override
             public void onTurnOn(int position) {
-                int actual = mNotificationList.get(position).getActive();
+                int actual = mBusNotificationList.get(position).getActive();
                 if (actual == NOT_ACTIVE) {
                     actual = IS_ACTIVE;
-                    mNotificationList.get(position).setActive(actual);
-                    writeNewNotification(mNotificationList.get(position));
+                    mBusNotificationList.get(position).setActive(actual);
+                    int secondsToAlarm = NotificationUtils
+                            .secondsToAlarm(mBusNotificationList.get(position)).get(ALARM_TIME);
+                    NotificationUtils.scheduleJob(getApplicationContext(),
+                            mBusNotificationList.get(position), secondsToAlarm);
+                    writeNewNotification(mBusNotificationList.get(position));
                 }
             }
 
             @Override
             public void onTurnOff(int position) {
-                int actual = mNotificationList.get(position).getActive();
+                int actual = mBusNotificationList.get(position).getActive();
                 if (actual == IS_ACTIVE) {
                     actual = NOT_ACTIVE;
-                    mNotificationList.get(position).setActive(actual);
-                    writeNewNotification(mNotificationList.get(position));
+                    NotificationUtils.deleteJob(getApplicationContext(),
+                            mBusNotificationList.get(position));
+                    mBusNotificationList.get(position).setActive(actual);
+                    writeNewNotification(mBusNotificationList.get(position));
                 }
+            }
 
+            @Override
+            public void onDeleteClicked(int position) {
+                deleteNotification(mBusNotificationList.get(position));
             }
         });
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false);
         mNotificationRV.setLayoutManager(mLayoutManager);
         mNotificationRV.setAdapter(mNotificationsAdapter);
     }
@@ -305,8 +333,13 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void writeNewNotification(Notification notification) {
+    private void writeNewNotification(BusNotification busNotification) {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
-        mDatabaseReference.child(notification.getName()).setValue(notification);
+        mDatabaseReference.child(busNotification.getName()).setValue(busNotification);
+    }
+
+    private void deleteNotification(BusNotification busNotification) {
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
+        mDatabaseReference.child(busNotification.getName()).removeValue();
     }
 }

@@ -3,7 +3,6 @@ package com.gustavohidalgo.quaiscalingudum.views;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,13 +16,12 @@ import android.widget.Toast;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,8 +29,6 @@ import butterknife.OnClick;
 
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION_LIST;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -58,7 +54,7 @@ public class SetNotificationsFragment extends Fragment {
     RecyclerView mNotificationsRV;
 
     private ArrayList<String> mNotificationList;
-    private Notification mNotification;
+    private BusNotification mBusNotification;
 
     private OnEditNotificationListener mListener;
 
@@ -70,14 +66,14 @@ public class SetNotificationsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param notification Parameter 1.
+     * @param busNotification Parameter 1.
      * @return A new instance of fragment SetNotificationsFragment.
      */
-    public static SetNotificationsFragment newInstance(Notification notification,
+    public static SetNotificationsFragment newInstance(BusNotification busNotification,
                                                        ArrayList<String> notificationList) {
         SetNotificationsFragment fragment = new SetNotificationsFragment();
         Bundle args = new Bundle();
-        args.putParcelable(NOTIFICATION, notification);
+        args.putParcelable(NOTIFICATION, busNotification);
         args.putStringArrayList(NOTIFICATION_LIST, notificationList);
         fragment.setArguments(args);
         return fragment;
@@ -87,7 +83,7 @@ public class SetNotificationsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mNotification = getArguments().getParcelable(NOTIFICATION);
+            mBusNotification = getArguments().getParcelable(NOTIFICATION);
             mNotificationList = getArguments().getStringArrayList(NOTIFICATION_LIST);
         }
     }
@@ -98,9 +94,9 @@ public class SetNotificationsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set_notifications, container, false);
         ButterKnife.bind(this, view);
-        DateTime dateTime = NotificationUtils.getDateTime(mNotification);
-        mLineNameTV.setText(mNotification.getTrip().getTripHeadsign());
-        mLineCodeTV.setText(mNotification.getTrip().getRouteId());
+        DateTime dateTime = NotificationUtils.getDateTime(mBusNotification.getArriveDateTime());
+        mLineNameTV.setText(mBusNotification.getTrip().getTripHeadsign());
+        mLineCodeTV.setText(mBusNotification.getTrip().getRouteId());
         String time = dateTime.getHourOfDay() + ":" +
                 dateTime.getMinuteOfHour();
         mArrivalTime.setText(time);
@@ -113,9 +109,9 @@ public class SetNotificationsFragment extends Fragment {
             if (mNotificationList.contains(mNotificationName.getText().toString())){
                 Toast.makeText(getContext(), "this name already exists", Toast.LENGTH_SHORT).show();
             } else {
-                mNotification.setName(mNotificationName.getText().toString());
-                mNotification.setActive(booleanToInt(mNotificationActiveSW.isChecked()));
-                mListener.toFinishCreatingNotification(mNotification);
+                mBusNotification.setName(mNotificationName.getText().toString());
+                mBusNotification.setActive(booleanToInt(mNotificationActiveSW.isChecked()));
+                mListener.toFinishCreatingNotification(mBusNotification);
             }
         }
     }
@@ -123,7 +119,7 @@ public class SetNotificationsFragment extends Fragment {
     @OnClick(R.id.back_details_bt)
     public void onBackPressed() {
         if (mListener != null) {
-            mListener.toDetails(mNotification);
+            mListener.toDetails(mBusNotification);
         }
     }
 

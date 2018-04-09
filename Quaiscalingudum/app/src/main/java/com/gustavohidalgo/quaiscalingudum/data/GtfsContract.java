@@ -62,4 +62,21 @@ public class GtfsContract {
                 TRIP_ID, START_TIME, END_TIME, HEADWAY_SECS
         };
     }
+
+    public static final class StopsEntry implements BaseColumns {
+        public static final String PATH_STOPS = "stops";
+        public static final String STOPS_TABLE_NAME = "stops";
+        public static final Uri STOPS_CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_STOPS).build();
+
+        public static final String STOP_ID = "stop_id";
+        public static final String STOP_NAME = "stop_name";
+        public static final String STOP_DESC = "stop_desc";
+        public static final String STOP_LAT = "stop_lat";
+        public static final String STOP_LON = "stop_lon";
+
+        public static final String[] STOPS_COLUMNS = {
+                STOP_ID, STOP_NAME, STOP_DESC, STOP_LAT, STOP_LON
+        };
+    }
 }

@@ -47,6 +47,13 @@ public final class Constants {
 
     public static final int STOPS_STOP_ID = 1;
     public static final int STOPS_STOP_NAME = 2;
+    public static final int STOPS_STOP_DESC = 3;
+    public static final int STOPS_STOP_LAT = 4;
+    public static final int STOPS_STOP_LON = 5;
 
+    public static final int ONE_MINUTE = 60;
+
+    public static final int ALARM_TIME = 0;
+    public static final int ARRIVE_TIME = 1;
 
 }

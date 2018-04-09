@@ -7,5 +7,5 @@ package com.gustavohidalgo.quaiscalingudum.interfaces;
 public interface OnRecyclerViewClickListener {
     void onTurnOn(int position);
     void onTurnOff(int position);
-    // void onLongClicked(int position);
+    void onDeleteClicked(int position);
 }

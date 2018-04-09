@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 
 import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.FrequenciesEntry.FREQUENCIES_TABLE_NAME;
 import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.StopTimesEntry.STOP_TIMES_TABLE_NAME;
+import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.StopsEntry.STOPS_TABLE_NAME;
 import static com.gustavohidalgo.quaiscalingudum.data.GtfsContract.TripsEntry.TRIPS_TABLE_NAME;
 
 /**
@@ -28,6 +29,8 @@ public class GtfsContentProvider extends ContentProvider {
     public static final int STOP_TIMES_WITH_ID = 201;
     public static final int FREQUENCIES = 300;
     public static final int FREQUENCIES_WITH_ID = 301;
+    public static final int STOPS = 400;
+    public static final int STOPS_WITH_ID = 401;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -55,6 +58,9 @@ public class GtfsContentProvider extends ContentProvider {
                 break;
             case FREQUENCIES:
                 tableName = FREQUENCIES_TABLE_NAME;
+                break;
+            case STOPS:
+                tableName = STOPS_TABLE_NAME;
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -110,6 +116,15 @@ public class GtfsContentProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
+            case STOPS:
+                long stopsId = db.insert(STOPS_TABLE_NAME, null, values);
+                if ( stopsId > 0 ) {
+                    returnUri = ContentUris.withAppendedId(
+                            GtfsContract.StopsEntry.STOPS_CONTENT_URI, stopsId);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -134,6 +149,9 @@ public class GtfsContentProvider extends ContentProvider {
                 break;
             case FREQUENCIES_WITH_ID:
                 itemDeleted = db.delete(FREQUENCIES_TABLE_NAME, "_id=?", new String[]{id});
+                break;
+            case STOPS_WITH_ID:
+                itemDeleted = db.delete(STOPS_TABLE_NAME, "_id=?", new String[]{id});
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -166,6 +184,10 @@ public class GtfsContentProvider extends ContentProvider {
                 GtfsContract.FrequenciesEntry.PATH_FREQUENCIES, FREQUENCIES);
         uriMatcher.addURI(GtfsContract.AUTHORITY,
                 GtfsContract.FrequenciesEntry.PATH_FREQUENCIES + "/#", FREQUENCIES_WITH_ID);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.StopsEntry.PATH_STOPS, STOPS);
+        uriMatcher.addURI(GtfsContract.AUTHORITY,
+                GtfsContract.StopsEntry.PATH_STOPS + "/#", STOPS_WITH_ID);
         return uriMatcher;
     }
 }

@@ -1,11 +1,34 @@
 package com.gustavohidalgo.quaiscalingudum.utils;
 
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import android.content.Context;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
+import com.firebase.jobdispatcher.GooglePlayDriver;
+import com.firebase.jobdispatcher.Job;
+import com.firebase.jobdispatcher.Lifetime;
+import com.firebase.jobdispatcher.RetryStrategy;
+import com.firebase.jobdispatcher.Trigger;
+import com.google.gson.Gson;
+import com.gustavohidalgo.quaiscalingudum.models.BusDateTime;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
+import com.gustavohidalgo.quaiscalingudum.services.NotificationJobService;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 
 import java.util.ArrayList;
+
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FRIDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.MONDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.ONE_MINUTE;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SATURDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SUNDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.THURSDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TUESDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.WEDNESDAY;
 
 /**
  * Created by gustavo.hidalgo on 18/03/23.
@@ -13,18 +36,13 @@ import java.util.ArrayList;
 
 public class NotificationUtils {
 
-    public static String getServiceIds(Notification notification){
+    public static String getServiceIds(BusNotification busNotification){
         ArrayList<String> serviceIdd = new ArrayList<>();
         serviceIdd.add("USD");
         StringBuilder serviceId = new StringBuilder();
-        int daysOfWeek = notification.getDaysOfWeek();
-        int year = notification.getYear();
-        int monthOfYear = notification.getMonthOfYear();
-        int dayOfMonth = notification.getDayOfMonth();
-        int hourOfDay = notification.getHourOfDay();
-        int minuteOfHour = notification.getMinuteOfHour();
+        int daysOfWeek = busNotification.getDaysOfWeek();
 
-        if(notification.getWeekly() == 1) {
+        if(busNotification.getWeekly() == 1) {
             if ((daysOfWeek &= 0b0111110) > 0) {
                 serviceIdd.add("U__");
                 serviceIdd.add("U_D");
@@ -58,8 +76,7 @@ public class NotificationUtils {
                 serviceId.append("_");
             }
         } else {
-            DateTime dateTime = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay,
-                    minuteOfHour);
+            DateTime dateTime = NotificationUtils.getDateTime(busNotification.getArriveDateTime());
             if (dateTime.getDayOfWeek() == DateTimeConstants.MONDAY
                     || dateTime.getDayOfWeek() == DateTimeConstants.TUESDAY
                     || dateTime.getDayOfWeek() == DateTimeConstants.WEDNESDAY
@@ -85,24 +102,185 @@ public class NotificationUtils {
         return serviceId.toString();
     }
 
-    public static DateTime getDateTime(Notification notification) {
-        int year = notification.getYear();
-        int monthOfYear = notification.getMonthOfYear();
-        int dayOfMonth = notification.getDayOfMonth();
-        int hourOfDay = notification.getHourOfDay();
-        int minuteOfHour = notification.getMinuteOfHour();
-        return new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour);
+    public static DateTime getDateTime(BusDateTime busDateTime) {
+        return new DateTime(busDateTime.getYear(), busDateTime.getMonthOfYear(),
+                busDateTime.getDayOfMonth(), busDateTime.getHourOfDay(), busDateTime.getMinuteOfHour());
     }
 
-    public static void setNewDaysOfWeek(int daysOfWeek, Notification notification) {
-        int oldDaysOfWeek = notification.getDaysOfWeek();
-        daysOfWeek = oldDaysOfWeek |= daysOfWeek;
-        notification.setDaysOfWeek(daysOfWeek);
+    public static BusDateTime dateTimeToBus(DateTime dateTime){
+        return new BusDateTime(dateTime.getYear(), dateTime.getMonthOfYear(),
+                dateTime.getDayOfMonth(), dateTime.getHourOfDay(), dateTime.getMinuteOfHour());
     }
 
-    public static void resetDaysOfWeek(int daysOfWeek, Notification notification) {
-        int oldDaysOfWeek = notification.getDaysOfWeek();
-        daysOfWeek = oldDaysOfWeek &= ~daysOfWeek;
-        notification.setDaysOfWeek(daysOfWeek);
+    public static void setNewDaysOfWeek(int daysOfWeek, BusNotification busNotification) {
+        int oldDaysOfWeek = busNotification.getDaysOfWeek();
+        daysOfWeek = oldDaysOfWeek | daysOfWeek;
+        busNotification.setDaysOfWeek(daysOfWeek);
+    }
+
+    public static void resetDaysOfWeek(int daysOfWeek, BusNotification busNotification) {
+        int oldDaysOfWeek = busNotification.getDaysOfWeek();
+        daysOfWeek = oldDaysOfWeek & ~daysOfWeek;
+        busNotification.setDaysOfWeek(daysOfWeek);
+    }
+
+    public static ArrayList<Integer> secondsToAlarm(BusNotification busNotification){
+        DateTime alarm;
+        DateTime departure;
+        DateTime arrive;
+        int daysOfWeek = busNotification.getDaysOfWeek();
+        if (busNotification.getWeekly() == 1){
+            int today = dtConstantToBusDowConstant(DateTime.now().getDayOfWeek());
+            int daysToTarget = 0;
+
+            while ((daysOfWeek & today) == 0){
+                today >>= 1;
+                if (today == 0b0000000){
+                    today = 0b1000000;
+                }
+                daysToTarget++;
+            }
+
+            departure = new DateTime(DateTime.now().getYear(),
+                    DateTime.now().getMonthOfYear(),
+                    DateTime.now().getDayOfMonth(),
+                    busNotification.getDepartureDateTime().getHourOfDay(),
+                    busNotification.getDepartureDateTime().getMinuteOfHour());
+            arrive = new DateTime(DateTime.now().getYear(),
+                    DateTime.now().getMonthOfYear(),
+                    DateTime.now().getDayOfMonth(),
+                    busNotification.getArriveDateTime().getHourOfDay(),
+                    busNotification.getArriveDateTime().getMinuteOfHour());
+            if(daysToTarget > 0) {
+                departure.plusDays(daysToTarget);
+                arrive.plusDays(daysToTarget);
+            }
+        } else {
+            departure = getDateTime(busNotification.getDepartureDateTime());
+            arrive = getDateTime(busNotification.getArriveDateTime());
+        }
+
+        if (departure.isBeforeNow()){
+            if (arrive.isBeforeNow()){
+                alarm = departure.plusDays(1);
+            } else {
+                long travelTime = arrive.getMillis() - departure.getMillis();
+                long travelTimeRemaining = arrive.getMillis() - DateTime.now().getMillis();
+
+                while (true){
+                    if (travelTimeRemaining < (2*ONE_MINUTE)){
+                        alarm = arrive.minusMillis(ONE_MINUTE*1000);
+                        break;
+                    }
+                    travelTime /= 2;
+                    if (travelTime < travelTimeRemaining){
+                        alarm = arrive.minusMillis((int) (travelTimeRemaining-travelTime));
+                        break;
+                    }
+                }
+            }
+        } else {
+            alarm = departure;
+        }
+
+        long alarmMillis = alarm.getMillis() - DateTime.now().getMillis();
+        long arrivalMillis = arrive.getMillis() - DateTime.now().getMillis();
+        ArrayList<Integer> result = new ArrayList<>();
+        result.add((int) alarmMillis / 1000);
+        result.add((int) arrivalMillis / 1000);
+
+        return result;
+    }
+
+    public static void scheduleJob(Context context, BusNotification busNotification,
+                                  int secondsToAlarm){
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+
+        Gson g = new Gson();
+        String json = g.toJson(busNotification);
+        PersistableBundle myExtrasBundle = new PersistableBundle();
+        myExtrasBundle.putString(NOTIFICATION, json);
+        Bundle bundle = new Bundle(myExtrasBundle);
+
+        Job notificationJob = dispatcher.newJobBuilder()
+                // the JobService that will be called
+                .setService(NotificationJobService.class)
+                // uniquely identifies the job
+                .setTag(busNotification.getName())
+                // don't overwrite an existing job with the same tag
+                .setReplaceCurrent(true)
+                // don't persist past a device reboot
+                .setLifetime(Lifetime.FOREVER)
+                // retry with exponential backoff
+                .setRetryStrategy(RetryStrategy.DEFAULT_LINEAR)
+                // one-off job
+                .setRecurring(true)
+                // start between 0 and 60 seconds from now
+                .setTrigger(Trigger.executionWindow(secondsToAlarm, secondsToAlarm + 30))
+                .setExtras(bundle)
+                .build();
+
+        dispatcher.mustSchedule(notificationJob);
+    }
+
+    public static void deleteJob(Context context, BusNotification busNotification){
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
+        dispatcher.cancel(busNotification.getName());
+    }
+
+    public static int dtConstantToBusDowConstant(int dateTimeConstant){
+        int busDowConstant;
+        switch (dateTimeConstant){
+            case DateTimeConstants.SUNDAY:
+                busDowConstant = SUNDAY;
+                break;
+            case DateTimeConstants.MONDAY:
+                busDowConstant = MONDAY;
+                break;
+            case DateTimeConstants.TUESDAY:
+                busDowConstant = TUESDAY;
+                break;
+            case DateTimeConstants.WEDNESDAY:
+                busDowConstant = WEDNESDAY;
+                break;
+            case DateTimeConstants.THURSDAY:
+                busDowConstant = THURSDAY;
+                break;
+            case DateTimeConstants.FRIDAY:
+                busDowConstant = FRIDAY;
+                break;
+            default:
+                busDowConstant = SATURDAY;
+                break;
+        }
+        return busDowConstant;
+    }
+
+    public static int busDowConstantToDtConstant(int busDowConstant){
+        int dateTimeConstant;
+        switch (busDowConstant){
+            case SUNDAY:
+                dateTimeConstant = DateTimeConstants.SUNDAY;
+                break;
+            case MONDAY:
+                dateTimeConstant = DateTimeConstants.MONDAY;
+                break;
+            case TUESDAY:
+                dateTimeConstant = DateTimeConstants.TUESDAY;
+                break;
+            case WEDNESDAY:
+                dateTimeConstant = DateTimeConstants.WEDNESDAY;
+                break;
+            case THURSDAY:
+                dateTimeConstant = DateTimeConstants.THURSDAY;
+                break;
+            case FRIDAY:
+                dateTimeConstant = DateTimeConstants.FRIDAY;
+                break;
+            default:
+                dateTimeConstant = DateTimeConstants.SATURDAY;
+                break;
+        }
+        return dateTimeConstant;
     }
 }

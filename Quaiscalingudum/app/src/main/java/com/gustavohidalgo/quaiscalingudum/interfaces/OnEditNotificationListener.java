@@ -4,7 +4,7 @@ package com.gustavohidalgo.quaiscalingudum.interfaces;
  * Created by gustavo.hidalgo on 18/02/06.
  */
 
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
 
 /**
  * This interface must be implemented by activities that contain this
@@ -17,9 +17,9 @@ import com.gustavohidalgo.quaiscalingudum.models.Notification;
  * >Communicating with Other Fragments</a> for more information.
  */
 public interface OnEditNotificationListener {
-    void toEta(Notification notification);
-    void toPickLine(Notification notification);
-    void toDetails(Notification notification);
-    void toSetNotifications(Notification notification);
-    void toFinishCreatingNotification(Notification notification);
+    void toEta(BusNotification busNotification);
+    void toPickLine(BusNotification busNotification);
+    void toDetails(BusNotification busNotification);
+    void toSetNotifications(BusNotification busNotification);
+    void toFinishCreatingNotification(BusNotification busNotification);
 }

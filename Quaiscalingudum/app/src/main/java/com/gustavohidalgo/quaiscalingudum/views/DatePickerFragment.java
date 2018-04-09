@@ -2,15 +2,12 @@ package com.gustavohidalgo.quaiscalingudum.views;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
-import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnSetDateListener;
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
 
 import java.util.Calendar;
 

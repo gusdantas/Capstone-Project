@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
-import com.gustavohidalgo.quaiscalingudum.models.Notification;
+import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,7 @@ import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {
-    private Notification mNotification;
+    private BusNotification mBusNotification;
     private ArrayList<String> mNotificationList;
 
     @Override
@@ -24,49 +24,49 @@ public class AddNotificationActivity extends AppCompatActivity
 
         if(savedInstanceState == null) {
             Intent intent = getIntent();
-            mNotification = intent.getParcelableExtra(OLD_NOTIFICATION);
+            mBusNotification = intent.getParcelableExtra(OLD_NOTIFICATION);
             mNotificationList = intent.getStringArrayListExtra(NOTIFICATION_LIST);
 
-            if (mNotification == null) {
+            if (mBusNotification == null) {
                 getSupportActionBar().setTitle("New notification");
-                mNotification = new Notification();
-                mNotification.setWeekly(NOT_WEEKLY);
+                mBusNotification = new BusNotification();
+                mBusNotification.setWeekly(NOT_WEEKLY);
             } else {
                 getSupportActionBar().setTitle("Edit notification");
             }
 
-            toEta(mNotification);
+            toEta(mBusNotification);
         }
     }
 
     @Override
-    public void toEta(Notification notification) {
-        EtaFragment etaFragment = EtaFragment.newInstance(notification);
+    public void toEta(BusNotification busNotification) {
+        EtaFragment etaFragment = EtaFragment.newInstance(busNotification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, etaFragment, ETA).commit();
     }
 
     @Override
-    public void toPickLine(Notification notification) {
-        PickLineFragment pickLineFragment = PickLineFragment.newInstance(notification);
+    public void toPickLine(BusNotification busNotification) {
+        PickLineFragment pickLineFragment = PickLineFragment.newInstance(busNotification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, pickLineFragment, PICK_LINE).commit();
     }
 
     @Override
-    public void toDetails(Notification notification) {
-        DetailsFragment detailsFragment = DetailsFragment.newInstance(notification);
+    public void toDetails(BusNotification busNotification) {
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(busNotification);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, detailsFragment, DETAILS).commit();
     }
 
     @Override
-    public void toSetNotifications(Notification notification) {
+    public void toSetNotifications(BusNotification busNotification) {
         SetNotificationsFragment setNotificationsFragment = SetNotificationsFragment
-                .newInstance(notification, mNotificationList);
+                .newInstance(busNotification, mNotificationList);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.activity_add_notification, setNotificationsFragment, SET_NOTIFICATIONS)
@@ -74,10 +74,10 @@ public class AddNotificationActivity extends AppCompatActivity
     }
 
     @Override
-    public void toFinishCreatingNotification(Notification notification) {
+    public void toFinishCreatingNotification(BusNotification busNotification) {
         Intent intent = new Intent(this, MainActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putParcelable(NOTIFICATION, notification);
+        bundle.putParcelable(NOTIFICATION, busNotification);
         intent.putExtra(NOTIFICATION, bundle);
         startActivity(intent);
     }
