@@ -29,6 +29,7 @@ import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -178,36 +179,6 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
 
         mStopTimesFiltered.moveToPosition(position);
 
-//        while(mStopTimesFiltered.getPosition() != position){
-//
-//            String[] stopBefore = {
-//                mStopTimesFiltered.getString(STOP_TIMES__ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
-//                mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
-//                mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
-//                mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
-//            int[] timeBefore = stringToTime(stopBefore[STOP_TIMES_DEPARTURE_TIME]);
-//            DateTime dateTimeBefore = new DateTime(1970, 1, 1, timeBefore[HOUR],
-//                    timeBefore[MINUTE], 0);
-//
-//            mStopTimesFiltered.moveToNext();
-//
-//            String[] stopAfter = {
-//                    mStopTimesFiltered.getString(STOP_TIMES__ID),
-//                    mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
-//                    mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
-//                    mStopTimesFiltered.getString(STOP_TIMES_DEPARTURE_TIME),
-//                    mStopTimesFiltered.getString(STOP_TIMES_STOP_ID),
-//                    mStopTimesFiltered.getString(STOP_TIMES_STOP_SEQUENCE)};
-//            int[] timeAfter = stringToTime(stopAfter[STOP_TIMES_DEPARTURE_TIME]);
-//            DateTime dateTimeAfter = new DateTime(1970, 1, 1, timeAfter[HOUR],
-//                    timeAfter[MINUTE], 0);
-//
-//            long millis = dateTimeAfter.getMillis() - dateTimeBefore.getMillis();
-//            int seconds = (int) millis/1000;
-//        }
-
         mBusNotification.setArriveStopTime(new StopTime(
                 mStopTimesFiltered.getString(STOP_TIMES_TRIP_ID),
                 mStopTimesFiltered.getString(STOP_TIMES_ARRIVAL_TIME),
@@ -219,20 +190,19 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         // time get by the bus from start to the choosen stop
         int[] departureRefTime = stringToTime(mBusNotification.getDepartureStopTime().getArrivalTime());
         DateTime departureRefDt = new DateTime(1970, 1, 1, 0,
-                departureRefTime[MINUTE], 0);
+                departureRefTime[MINUTE]);
 
         int[] arrivalRefTime = stringToTime(mBusNotification.getArriveStopTime().getArrivalTime());
         DateTime arrivalRefDt = new DateTime(1970, 1, 1,
-                (arrivalRefTime[HOUR] - departureRefTime[HOUR]), arrivalRefTime[MINUTE],
-                0);
+                (arrivalRefTime[HOUR] - departureRefTime[HOUR]), arrivalRefTime[MINUTE]);
 
-        DateTime travelDt = new DateTime(arrivalRefDt.getMillis() - departureRefDt.getMillis());
+        Interval travelDt = new Interval(departureRefDt, arrivalRefDt);
 
         // get the start time considering the bus arriving at the choosen point in the choosen time
         DateTime desiredArrivalDt = new DateTime(1970,1,1,
                 mBusNotification.getArriveDateTime().getHourOfDay(),
-                mBusNotification.getArriveDateTime().getMinuteOfHour(), 0);
-        DateTime desiredDepartureDt = new DateTime(desiredArrivalDt.getMillis() - travelDt.getMillis());
+                mBusNotification.getArriveDateTime().getMinuteOfHour());
+        DateTime desiredDepartureDt = new DateTime(desiredArrivalDt.getMillis() - travelDt.toDurationMillis());
         mBusNotification.setDepartureDateTime(new BusDateTime(
                 mBusNotification.getArriveDateTime().getYear(),
                 mBusNotification.getArriveDateTime().getMonthOfYear(),
@@ -244,10 +214,10 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         int headway = 0;
         mFrequenciesFiltered.moveToFirst();
         for (int i = 0; i < mFrequenciesFiltered.getCount(); i++) {
-            int hour = Integer.parseInt(mFrequenciesFiltered.getString(2)
-                    .replaceAll("\"", "").split(":")[0]);
-            if (hour == desiredDepartureDt.getHourOfDay()){
-                headway = 1000 * Integer.parseInt(mFrequenciesFiltered.getString(4)
+            int hour = Integer.parseInt(mFrequenciesFiltered.getString(FREQUENCIES_START_TIME)
+                    .replaceAll("\"", "").split(":")[HOUR]);
+            if (hour >= desiredDepartureDt.getHourOfDay()){
+                headway = 1000 * Integer.parseInt(mFrequenciesFiltered.getString(FREQUENCIES_HEADWAY_SECS)
                         .replaceAll("\"", ""));
                 break;
             }
@@ -279,7 +249,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
                 mBusNotification.getArriveDateTime().getMonthOfYear(),
                 mBusNotification.getArriveDateTime().getDayOfMonth(),
                 Integer.parseInt(choosenTime[HOUR]),
-                Integer.parseInt(choosenTime[MINUTE]),0);
+                Integer.parseInt(choosenTime[MINUTE]));
     }
 
     @NonNull

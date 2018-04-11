@@ -51,6 +51,11 @@ public final class Constants {
     public static final int STOPS_STOP_LAT = 4;
     public static final int STOPS_STOP_LON = 5;
 
+    public static final int FREQUENCIES_TRIP_ID = 1;
+    public static final int FREQUENCIES_START_TIME = 2;
+    public static final int FREQUENCIES_END_TIME = 3;
+    public static final int FREQUENCIES_HEADWAY_SECS = 4;
+
     public static final int ONE_MINUTE = 60;
 
     public static final int ALARM_TIME = 0;

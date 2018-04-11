@@ -144,37 +144,30 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
             switch (dayCheckBox.getId()) {
                 case R.id.sun_cb:
                     NotificationUtils.setNewDaysOfWeek(SUNDAY, mBusNotification);
-                    // mBusNotification.setDayOfWeek(SUNDAY);
                     mWeeklyDays.set(0, "Sundays");
                     break;
                 case R.id.mon_cb:
                     NotificationUtils.setNewDaysOfWeek(MONDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(MONDAY);
                     mWeeklyDays.set(1, "Mondays");
                     break;
                 case R.id.tue_cb:
                     NotificationUtils.setNewDaysOfWeek(TUESDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(TUESDAY);
                     mWeeklyDays.set(2, "Tuesdays");
                     break;
                 case R.id.wed_cb:
                     NotificationUtils.setNewDaysOfWeek(WEDNESDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(WEDNESDAY);
                     mWeeklyDays.set(3, "Wednesdays");
                     break;
                 case R.id.thu_cb:
                     NotificationUtils.setNewDaysOfWeek(THURSDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(THURSDAY);
                     mWeeklyDays.set(4, "Thursdays");
                     break;
                 case R.id.fri_cb:
                     NotificationUtils.setNewDaysOfWeek(FRIDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(FRIDAY);
                     mWeeklyDays.set(5, "Fridays");
                     break;
                 case R.id.sat_cb:
                     NotificationUtils.setNewDaysOfWeek(SATURDAY, mBusNotification);
-                    //mBusNotification.setDayOfWeek(SATURDAY);
                     mWeeklyDays.set(6, "Saturdays");
                     break;
             }
@@ -182,44 +175,36 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
             switch (dayCheckBox.getId()) {
                 case R.id.sun_cb:
                     NotificationUtils.resetDaysOfWeek(SUNDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(SUNDAY);
                     mWeeklyDays.set(0, "");
                     break;
                 case R.id.mon_cb:
                     NotificationUtils.resetDaysOfWeek(MONDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(MONDAY);
                     mWeeklyDays.set(1, "");
                     break;
                 case R.id.tue_cb:
                     NotificationUtils.resetDaysOfWeek(TUESDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(TUESDAY);
                     mWeeklyDays.set(2, "");
                     break;
                 case R.id.wed_cb:
                     NotificationUtils.resetDaysOfWeek(WEDNESDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(WEDNESDAY);
                     mWeeklyDays.set(3, "");
                     break;
                 case R.id.thu_cb:
                     NotificationUtils.resetDaysOfWeek(THURSDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(THURSDAY);
                     mWeeklyDays.set(4, "");
                     break;
                 case R.id.fri_cb:
                     NotificationUtils.resetDaysOfWeek(FRIDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(FRIDAY);
                     mWeeklyDays.set(5, "");
                     break;
                 case R.id.sat_cb:
                     NotificationUtils.resetDaysOfWeek(SATURDAY, mBusNotification);
-                    //mBusNotification.resetDayOfWeek(SATURDAY);
                     mWeeklyDays.set(6, "");
                     break;
             }
         }
 
         if(mBusNotification.getDaysOfWeek() > 0){
-            //mBusNotification.setIsWeekly(true);
             mBusNotification.setWeekly(IS_WEEKLY);
             StringBuilder stringBuilder = new StringBuilder();
             for (String day : mWeeklyDays) {
@@ -255,7 +240,7 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
     @OnClick(R.id.next_pickline_bt)
     public void onNextPressed() {
         mDateTime = new DateTime(mDateTime.getYear(), mDateTime.getMonthOfYear(),
-                mDateTime.getDayOfMonth(), mDateTime.getHourOfDay(), mDateTime.getMinuteOfHour());
+                mDateTime.getDayOfMonth(), mTimePicker.getCurrentHour(), mTimePicker.getCurrentMinute());
         mBusNotification.setArriveDateTime(NotificationUtils.dateTimeToBus(mDateTime));
         if (mListener != null) {
             mListener.toPickLine(mBusNotification);
