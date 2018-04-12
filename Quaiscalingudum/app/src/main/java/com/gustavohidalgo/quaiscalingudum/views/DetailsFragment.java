@@ -29,6 +29,7 @@ import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -196,13 +197,15 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         DateTime arrivalRefDt = new DateTime(1970, 1, 1,
                 (arrivalRefTime[HOUR] - departureRefTime[HOUR]), arrivalRefTime[MINUTE]);
 
-        Interval travelDt = new Interval(departureRefDt, arrivalRefDt);
+        //Interval travelDt = new Interval(departureRefDt, arrivalRefDt);
+        Duration travelDt = new Duration(departureRefDt, arrivalRefDt);
 
         // get the start time considering the bus arriving at the choosen point in the choosen time
         DateTime desiredArrivalDt = new DateTime(1970,1,1,
                 mBusNotification.getArriveDateTime().getHourOfDay(),
                 mBusNotification.getArriveDateTime().getMinuteOfHour());
-        DateTime desiredDepartureDt = new DateTime(desiredArrivalDt.getMillis() - travelDt.toDurationMillis());
+        // DateTime desiredDepartureDt = new DateTime(desiredArrivalDt.getMillis() - travelDt.toDurationMillis());
+        DateTime desiredDepartureDt = desiredArrivalDt.minus(travelDt);
         mBusNotification.setDepartureDateTime(new BusDateTime(
                 mBusNotification.getArriveDateTime().getYear(),
                 mBusNotification.getArriveDateTime().getMonthOfYear(),

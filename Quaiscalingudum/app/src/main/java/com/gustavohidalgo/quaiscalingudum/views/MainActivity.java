@@ -54,6 +54,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
 
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.fab) FloatingActionButton mFab;
     @BindView(R.id.drawer_layout) DrawerLayout mDrawer;
     @BindView(R.id.nav_view) NavigationView mNavigationView;
-    @BindView(R.id.test_tv) TextView testTv;
     @BindView(R.id.notification_rv) RecyclerView mNotificationRV;
     ImageView mProfilePictureIv;
     TextView mProfileEmailTv;
@@ -259,11 +259,13 @@ public class MainActivity extends AppCompatActivity
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 BusNotification value = dataSnapshot.getValue(BusNotification.class);
                 int index = mNotificationNameList.indexOf(value.getName());
-                mNotificationNameList.remove(index);
-                NotificationUtils.deleteJob(getApplicationContext(),
-                        mBusNotificationList.get(index));
-                mBusNotificationList.remove(index);
-                mNotificationsAdapter.notifyDataSetChanged();
+                if (index != -1) {
+                    mNotificationNameList.remove(index);
+                    NotificationUtils.deleteJob(getApplicationContext(),
+                            mBusNotificationList.get(index));
+                    mBusNotificationList.remove(index);
+                    mNotificationsAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -341,5 +343,11 @@ public class MainActivity extends AppCompatActivity
     private void deleteNotification(BusNotification busNotification) {
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
         mDatabaseReference.child(busNotification.getName()).removeValue();
+    }
+
+    @OnClick(R.id.button2)
+    public void testNotification(View view){
+        ArrayList<Integer> secs = NotificationUtils.secondsToAlarm(mBusNotificationList.get(0));
+        NotificationJobService.notificar(secs, mBusNotificationList.get(0), this);
     }
 }

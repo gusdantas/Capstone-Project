@@ -3,6 +3,7 @@ package com.gustavohidalgo.quaiscalingudum.utils;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -17,6 +18,8 @@ import com.gustavohidalgo.quaiscalingudum.services.NotificationJobService;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import java.util.ArrayList;
 
@@ -125,7 +128,8 @@ public class NotificationUtils {
     }
 
     public static ArrayList<Integer> secondsToAlarm(BusNotification busNotification){
-        DateTime alarm;
+        Log.i("gugu", "secondsToAlarm");
+        Duration alarm;
         DateTime departure;
         DateTime arrive;
         int daysOfWeek = busNotification.getDaysOfWeek();
@@ -160,40 +164,40 @@ public class NotificationUtils {
             arrive = getDateTime(busNotification.getArriveDateTime());
         }
 
+        Duration travelTimeRemaining = new Duration(DateTime.now(), arrive);
+
         if (departure.isBeforeNow()){
             if (arrive.isBeforeNow()){
-                alarm = departure.plusDays(1);
+                //alarm = departure.plusDays(1);
+                alarm = new Duration(DateTime.now(), departure.plusDays(1));
             } else {
-                long travelTime = arrive.getMillis() - departure.getMillis();
-                long travelTimeRemaining = arrive.getMillis() - DateTime.now().getMillis();
-
-                while (true){
-                    if (travelTimeRemaining < (2*ONE_MINUTE)){
-                        alarm = arrive.minusMillis(ONE_MINUTE*1000);
-                        break;
+                if (travelTimeRemaining.getStandardMinutes() < (2*DateTimeConstants.SECONDS_PER_MINUTE)){
+                    alarm = new Duration(DateTimeConstants.MILLIS_PER_MINUTE);
+                } else {
+                    Duration alarmToArrival = new Duration(departure, arrive);
+                    while (alarmToArrival.getMillis() > travelTimeRemaining.getMillis()){
+                        alarmToArrival.dividedBy(2);
                     }
-                    travelTime /= 2;
-                    if (travelTime < travelTimeRemaining){
-                        alarm = arrive.minusMillis((int) (travelTimeRemaining-travelTime));
-                        break;
-                    }
+                    alarm = new Duration(travelTimeRemaining.getMillis()-alarmToArrival.getMillis());
                 }
+                //alarm = arrive.minus(alarmToArrival);
             }
         } else {
-            alarm = departure;
+            alarm = new Duration(DateTime.now(), departure);
         }
 
-        long alarmMillis = alarm.getMillis() - DateTime.now().getMillis();
-        long arrivalMillis = arrive.getMillis() - DateTime.now().getMillis();
+        //long alarmMillis = alarm.getMillis() - DateTime.now().getMillis();
+        //long arrivalMillis = arrive.getMillis() - DateTime.now().getMillis();
         ArrayList<Integer> result = new ArrayList<>();
-        result.add((int) alarmMillis / 1000);
-        result.add((int) arrivalMillis / 1000);
+        result.add((int) alarm.getStandardSeconds());
+        result.add((int) travelTimeRemaining.getStandardSeconds());
 
         return result;
     }
 
     public static void scheduleJob(Context context, BusNotification busNotification,
                                   int secondsToAlarm){
+        Log.i("gugu", "scheduleJob");
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
 
         Gson g = new Gson();
