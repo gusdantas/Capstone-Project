@@ -125,11 +125,14 @@ public class NotificationJobService extends JobService {
 
         Log.i("gugu", "notify");
         notificationManager.notify(WATER_REMINDER_NOTIFICATION_ID, notificationBuilder.build());
+        NotificationUtils.deleteJob(context, busNotification);
 
         if (secondsToAlarm.get(ARRIVE_TIME) > (2*ONE_MINUTE)) {
             Log.i("gugu", "mais q 2 min pro embarque");
             NotificationUtils.scheduleJob(context, busNotification,
                     secondsToAlarm.get(ALARM_TIME));
+        } else {
+            Log.i("gugu", "menos q 2 min pro embarque");
         }
     }
 }

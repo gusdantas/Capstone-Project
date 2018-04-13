@@ -168,26 +168,22 @@ public class NotificationUtils {
 
         if (departure.isBeforeNow()){
             if (arrive.isBeforeNow()){
-                //alarm = departure.plusDays(1);
                 alarm = new Duration(DateTime.now(), departure.plusDays(1));
             } else {
-                if (travelTimeRemaining.getStandardMinutes() < (2*DateTimeConstants.SECONDS_PER_MINUTE)){
+                if (travelTimeRemaining.getStandardMinutes() < 2){
                     alarm = new Duration(DateTimeConstants.MILLIS_PER_MINUTE);
                 } else {
                     Duration alarmToArrival = new Duration(departure, arrive);
                     while (alarmToArrival.getMillis() > travelTimeRemaining.getMillis()){
-                        alarmToArrival.dividedBy(2);
+                        alarmToArrival = alarmToArrival.dividedBy(2);
                     }
                     alarm = new Duration(travelTimeRemaining.getMillis()-alarmToArrival.getMillis());
                 }
-                //alarm = arrive.minus(alarmToArrival);
             }
         } else {
             alarm = new Duration(DateTime.now(), departure);
         }
 
-        //long alarmMillis = alarm.getMillis() - DateTime.now().getMillis();
-        //long arrivalMillis = arrive.getMillis() - DateTime.now().getMillis();
         ArrayList<Integer> result = new ArrayList<>();
         result.add((int) alarm.getStandardSeconds());
         result.add((int) travelTimeRemaining.getStandardSeconds());
@@ -197,7 +193,8 @@ public class NotificationUtils {
 
     public static void scheduleJob(Context context, BusNotification busNotification,
                                   int secondsToAlarm){
-        Log.i("gugu", "scheduleJob");
+        String msg = "scheduleJob " + String.valueOf(secondsToAlarm);
+        Log.i("gugu", msg);
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
 
         Gson g = new Gson();
