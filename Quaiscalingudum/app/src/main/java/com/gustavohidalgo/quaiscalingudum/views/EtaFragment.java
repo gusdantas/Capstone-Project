@@ -29,7 +29,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FRIDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.IS_WEEKLY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.MONDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOT_WEEKLY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SATURDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SUNDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.THURSDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TUESDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.WEDNESDAY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,7 +52,7 @@ public class EtaFragment extends Fragment implements OnSetDateListener {
 
     private BusNotification mBusNotification;
     private DateTime mDateTime;
-    private ArrayList<String> mWeeklyDays = new ArrayList<>();
+    private final ArrayList<String> mWeeklyDays = new ArrayList<>();
 
     @BindView(R.id.time_tv)
     TextView mTimeTV;

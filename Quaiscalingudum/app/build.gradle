@@ -1,19 +1,35 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        configRelease {
+            keyAlias 'quaiscalingudum_key_alias'
+            keyPassword 'quaisquais'
+            storeFile file("$rootDir/quaiscalingudum_key.jks")
+            storePassword 'quaisquais'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.gustavohidalgo.quaiscalingudum"
         minSdkVersion 21
         targetSdkVersion 27
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
+        setProperty("archivesBaseName", applicationId + "-v" + versionCode + "(" + versionName + ")")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            versionNameSuffix "-D"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.configRelease
+            versionNameSuffix "-R"
         }
     }
     buildToolsVersion '27.0.3'
@@ -36,7 +52,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:11.8.0'
     implementation 'com.firebaseui:firebase-ui-auth:3.2.1'
     implementation 'com.google.code.gson:gson:2.8.2'
-    // Required only if Facebook login support is required
     implementation 'com.facebook.android:facebook-android-sdk:4.27.0'
     implementation 'com.firebase:firebase-jobdispatcher:0.8.5'
 }

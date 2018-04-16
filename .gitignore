@@ -1,6 +1,5 @@
 # Built application files
-*.apk
-*.ap_
+
 
 # Files for the ART/Dalvik VM
 *.dex
@@ -42,13 +41,11 @@ captures/
 .idea/libraries
 
 # Keystore files
-*.jks
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 
 # Google Services (e.g. APIs or Firebase)
-google-services.json
 
 # Freeline
 freeline.py

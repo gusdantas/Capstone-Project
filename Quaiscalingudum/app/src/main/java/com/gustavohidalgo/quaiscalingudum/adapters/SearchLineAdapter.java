@@ -16,7 +16,12 @@ import com.gustavohidalgo.quaiscalingudum.models.Trip;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_ROUTE_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_SERVICE_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_DIRECTION_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_HEADSIGN;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TRIPS_TRIP_SHAPE_ID;
 
 /**
  * Created by hdant on 14/02/2018.

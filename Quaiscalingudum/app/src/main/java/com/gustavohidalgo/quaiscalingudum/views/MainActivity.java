@@ -4,27 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
-import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.Lifetime;
-import com.firebase.jobdispatcher.RetryStrategy;
-import com.firebase.jobdispatcher.Trigger;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,12 +32,8 @@ import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.adapters.NotificationsAdapter;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnRecyclerViewClickListener;
 import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
-import com.gustavohidalgo.quaiscalingudum.services.NotificationJobService;
 import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
-import com.gustavohidalgo.quaiscalingudum.utils.ParcelableUtils;
 import com.squareup.picasso.Picasso;
-
-import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,9 +42,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.ALARM_TIME;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.IS_ACTIVE;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION_LIST;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOT_ACTIVE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,7 +59,7 @@ public class MainActivity extends AppCompatActivity
     List<BusNotification> mBusNotificationList;
     ArrayList<String> mNotificationNameList;
     DatabaseReference mDatabaseReference;
-    private ChildEventListener mMenuEventListener;
+    private ChildEventListener mNotificationEventListener;
     NotificationsAdapter mNotificationsAdapter;
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
@@ -94,8 +85,6 @@ public class MainActivity extends AppCompatActivity
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 addNotification();
             }
         });
@@ -107,8 +96,9 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
+        initializeFirebase();
+
         if(savedInstanceState == null) {
-            initializeFirebase();
             Intent intent = getIntent();
             Bundle bundle = intent.getBundleExtra(NOTIFICATION);
             if (bundle != null) {
@@ -133,7 +123,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        if (mAuthStateListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
+        }
+        detachDatabaseReadListener();
     }
 
     @Override
@@ -141,14 +134,11 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 initializeFirebase();
-                // ...
             } else {
                 // Sign in failed, check response for error code
-                // ...
                 finish();
             }
         }
@@ -202,26 +192,18 @@ public class MainActivity extends AppCompatActivity
                             new AuthUI.IdpConfig.EmailBuilder().build(),
                             new AuthUI.IdpConfig.GoogleBuilder()
                                     .setScopes(Collections.singletonList(Scopes.PROFILE)).build());
-                    //new AuthUI.IdpConfig.FacebookBuilder().build());
                     startActivityForResult(
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
                                     .setAvailableProviders(providers)
-                                    //.setTheme(R.style.LoginTheme)
                                     .build(),
                             RC_SIGN_IN);
-                    goHome();
                 }
             }
         };
     }
 
-    private void goHome() {
-        Toast.makeText(this, "goHome", Toast.LENGTH_SHORT).show();
-    }
-
     private void updateUserInformationUI() {
-        Toast.makeText(this, "updateUserInformationUI", Toast.LENGTH_SHORT).show();
         if (sUser.getPhotoUrl() != null) {
             Picasso.with(this).load(sUser.getPhotoUrl())
                     .placeholder(R.mipmap.ic_launcher_round).into(mProfilePictureIv);
@@ -231,13 +213,16 @@ public class MainActivity extends AppCompatActivity
         }
         if (sUser.getEmail() != null) {
             mProfileEmailTv.setText(sUser.getEmail());
-
         }
 
         mBusNotificationList = new ArrayList<>();
         mNotificationNameList = new ArrayList<>();
         mDatabaseReference = FirebaseDatabase.getInstance().getReference("users/" + sUser.getUid());
-        mMenuEventListener = new ChildEventListener() {
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        database.setPersistenceEnabled(true);
+//        mDatabaseReference = database.getReference("users/" + sUser.getUid());
+//        mDatabaseReference.keepSynced(true);
+        mNotificationEventListener = new ChildEventListener() {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -277,7 +262,7 @@ public class MainActivity extends AppCompatActivity
                 databaseError.toException();
             }
         };
-        mDatabaseReference.addChildEventListener(mMenuEventListener);
+        mDatabaseReference.addChildEventListener(mNotificationEventListener);
 
         mNotificationsAdapter = new NotificationsAdapter(mBusNotificationList,
                 new OnRecyclerViewClickListener() {
@@ -345,9 +330,10 @@ public class MainActivity extends AppCompatActivity
         mDatabaseReference.child(busNotification.getName()).removeValue();
     }
 
-    @OnClick(R.id.button2)
-    public void testNotification(View view){
-        ArrayList<Integer> secs = NotificationUtils.secondsToAlarm(mBusNotificationList.get(0));
-        NotificationJobService.notificar(secs, mBusNotificationList.get(0), this);
+    private void detachDatabaseReadListener() {
+        if (mNotificationEventListener != null) {
+            mDatabaseReference.removeEventListener(mNotificationEventListener);
+            mNotificationEventListener = null;
+        }
     }
 }

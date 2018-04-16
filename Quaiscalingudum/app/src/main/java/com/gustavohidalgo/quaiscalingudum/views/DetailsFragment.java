@@ -30,7 +30,6 @@ import com.gustavohidalgo.quaiscalingudum.utils.NotificationUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -40,7 +39,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FREQUENCIES_HEADWAY_SECS;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FREQUENCIES_START_TIME;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.HOUR;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.MINUTE;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOPS_STOP_NAME;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOP_TIMES_ARRIVAL_TIME;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOP_TIMES_DEPARTURE_TIME;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOP_TIMES_STOP_ID;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOP_TIMES_STOP_SEQUENCE;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.STOP_TIMES_TRIP_ID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -119,7 +128,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         ButterKnife.bind(this, view);
         mLineCodeTV.setText(mTrip.getRouteId().replaceAll("\"", ""));
         mLineNameTV.setText(mTrip.getTripHeadsign().replaceAll("\"", ""));
-        mStopNamesArrayAdapter = new ArrayAdapter<String>(
+        mStopNamesArrayAdapter = new ArrayAdapter<>(
                 getActivity(),
                 android.R.layout.simple_spinner_item,
                 mStopsNames
@@ -237,6 +246,7 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
         mDepartureTimeBeforeRB.setText(arrivalDtBefore.toString(fmt));
         mDepartureTimeAfterRB.setText(arrivalDtAfter.toString(fmt));
         mDepartureTimeAfterRB.setChecked(true);
+        mDepartureTimeBeforeRB.setChecked(true);
     }
 
     @Override
@@ -248,11 +258,13 @@ public class DetailsFragment extends Fragment implements AdapterView.OnItemSelec
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         RadioButton button = group.findViewById(checkedId);
         String[] choosenTime = button.getText().toString().split(":");
-        mArriveBusTime = new DateTime(mBusNotification.getArriveDateTime().getYear(),
-                mBusNotification.getArriveDateTime().getMonthOfYear(),
-                mBusNotification.getArriveDateTime().getDayOfMonth(),
-                Integer.parseInt(choosenTime[HOUR]),
-                Integer.parseInt(choosenTime[MINUTE]));
+        if (!choosenTime[0].equals("")) {
+            mArriveBusTime = new DateTime(mBusNotification.getArriveDateTime().getYear(),
+                    mBusNotification.getArriveDateTime().getMonthOfYear(),
+                    mBusNotification.getArriveDateTime().getDayOfMonth(),
+                    Integer.parseInt(choosenTime[HOUR]),
+                    Integer.parseInt(choosenTime[MINUTE]));
+        }
     }
 
     @NonNull

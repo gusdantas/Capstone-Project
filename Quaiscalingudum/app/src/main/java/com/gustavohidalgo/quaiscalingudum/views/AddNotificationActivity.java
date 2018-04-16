@@ -1,8 +1,8 @@
 package com.gustavohidalgo.quaiscalingudum.views;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.gustavohidalgo.quaiscalingudum.R;
 import com.gustavohidalgo.quaiscalingudum.interfaces.OnEditNotificationListener;
@@ -10,7 +10,14 @@ import com.gustavohidalgo.quaiscalingudum.models.BusNotification;
 
 import java.util.ArrayList;
 
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.*;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.DETAILS;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.ETA;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION_LIST;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOT_WEEKLY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.OLD_NOTIFICATION;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.PICK_LINE;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SET_NOTIFICATIONS;
 
 public class AddNotificationActivity extends AppCompatActivity
         implements OnEditNotificationListener {

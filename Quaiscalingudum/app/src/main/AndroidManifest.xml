@@ -2,16 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gustavohidalgo.quaiscalingudum">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_go_bus_symbol"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_go_bus_symbol"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".views.MainActivity"
-            android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,18 +20,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.AddNotificationActivity"></activity>
+        <activity android:name=".views.AddNotificationActivity" />
+
         <provider
-            android:authorities="com.gustavohidalgo.quaiscalingudum"
             android:name=".data.GtfsContentProvider"
+            android:authorities="com.gustavohidalgo.quaiscalingudum"
             android:exported="false" />
+
         <service
             android:name=".services.NotificationJobService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE"/>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
             </intent-filter>
         </service>
+        <service android:name=".widgets.BusNotificationEnablingService" />
+        <service android:name=".widgets.ListWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+        <receiver android:name=".widgets.BusNotificationWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/bus_notification_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>

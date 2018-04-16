@@ -5,8 +5,6 @@ import android.os.Parcelable;
 
 import com.google.firebase.database.DataSnapshot;
 
-import org.joda.time.DateTime;
-
 /**
  * Created by gustavo.hidalgo on 18/02/06.
  */

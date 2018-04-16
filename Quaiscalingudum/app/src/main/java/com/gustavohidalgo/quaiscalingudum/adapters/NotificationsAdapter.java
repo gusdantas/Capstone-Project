@@ -25,6 +25,15 @@ import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FRIDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.IS_WEEKLY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.MONDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SATURDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SUNDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.THURSDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.TUESDAY;
+import static com.gustavohidalgo.quaiscalingudum.utils.Constants.WEDNESDAY;
+
 /**
  * Created by hdant on 14/02/2018.
  */
@@ -52,16 +61,80 @@ public class NotificationsAdapter extends
     @Override
     public void onBindViewHolder(NotificationViewHolder holder, int position) {
         BusNotification busNotification = mBusNotificationList.get(position);
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm\ndd/MM/yyyy");
+        DateTimeFormatter hourFmt = DateTimeFormat.forPattern("HH:mm");
+        DateTimeFormatter dateFmt = DateTimeFormat.forPattern("dd/MM/yyyy");
         holder.mNameSW.setText(busNotification.getName());
         holder.mNameSW.setChecked(intToBoolean(busNotification.getActive()));
         holder.mLineCodeTV.setText(busNotification.getTrip().getRouteId());
         holder.mLineNameTV.setText(busNotification.getTrip().getTripHeadsign());
+        StringBuilder date = new StringBuilder();
+        if (busNotification.getWeekly() == IS_WEEKLY){
+            int daysOfWeek = busNotification.getDaysOfWeek();
+            int day = 0b1000000;
+            while (day > 0b0000000){
+                if ((daysOfWeek & day) != 0){
+                    switch (day){
+                        case SUNDAY:
+                            date = new StringBuilder("Sun");
+                            break;
+                        case MONDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Mon");
+                            } else {
+                                date.append(" - Mon");
+                            }
+                            break;
+                        case TUESDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Tue");
+                            } else {
+                                date.append(" - Tue");
+                            }
+                            break;
+                        case WEDNESDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Wed");
+                            } else {
+                                date.append(" - Wed");
+                            }
+                            break;
+                        case THURSDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Thu");
+                            } else {
+                                date.append(" - Thu");
+                            }
+                            break;
+                        case FRIDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Fri");
+                            } else {
+                                date.append(" - Fri");
+                            }
+                            break;
+                        case SATURDAY:
+                            if (date.toString().equals("")){
+                                date = new StringBuilder("Sat");
+                            } else {
+                                date.append(" - Sat");
+                            }
+                            break;
+                    }
+                }
+                day >>= 1;
+            }
+        } else {
+            date.append(NotificationUtils.getDateTime(busNotification
+                    .getDepartureDateTime()).toString(dateFmt));
+        }
+        holder.mDaysTV.setText(date.toString());
+
         holder.mDepartTimeTV.setText(NotificationUtils.getDateTime(busNotification
-                .getDepartureDateTime()).toString(fmt));
+                .getDepartureDateTime()).toString(hourFmt));
         holder.mDepartPlaceTV.setText(busNotification.getDepartureStop());
+
         holder.mArriveTimeTV.setText(NotificationUtils.getDateTime(busNotification
-                .getArriveDateTime()).toString(fmt));
+                .getArriveDateTime()).toString(hourFmt));
         holder.mArrivePlaceTV.setText(busNotification.getArriveStop());
 
     }
@@ -81,6 +154,8 @@ public class NotificationsAdapter extends
         TextView mLineCodeTV;
         @BindView(R.id.line_name_tv)
         TextView mLineNameTV;
+        @BindView(R.id.days_tv)
+        TextView mDaysTV;
         @BindView(R.id.depart_time_tv)
         TextView mDepartTimeTV;
         @BindView(R.id.depart_place_tv)

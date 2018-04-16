@@ -3,7 +3,6 @@ package com.gustavohidalgo.quaiscalingudum.utils;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.util.Log;
 
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
@@ -19,14 +18,12 @@ import com.gustavohidalgo.quaiscalingudum.services.NotificationJobService;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 import java.util.ArrayList;
 
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.FRIDAY;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.MONDAY;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.NOTIFICATION;
-import static com.gustavohidalgo.quaiscalingudum.utils.Constants.ONE_MINUTE;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SATURDAY;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.SUNDAY;
 import static com.gustavohidalgo.quaiscalingudum.utils.Constants.THURSDAY;
@@ -128,7 +125,6 @@ public class NotificationUtils {
     }
 
     public static ArrayList<Integer> secondsToAlarm(BusNotification busNotification){
-        Log.i("gugu", "secondsToAlarm");
         Duration alarm;
         DateTime departure;
         DateTime arrive;
@@ -193,8 +189,6 @@ public class NotificationUtils {
 
     public static void scheduleJob(Context context, BusNotification busNotification,
                                   int secondsToAlarm){
-        String msg = "scheduleJob " + String.valueOf(secondsToAlarm);
-        Log.i("gugu", msg);
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(context));
 
         Gson g = new Gson();
