@@ -36,4 +36,10 @@
     <string name="finish">Finish</string>
     <string name="android_studio">Android Studio</string>
     <string name="android_studio_android_com">android.studio@android.com</string>
+    <string name="pick_date_desc">Pick a specific date button</string>
+    <string name="user_image_desc">User image</string>
+    <string name="delete_notification_desc">Delete notification button</string>
+    <string name="activate_notification_desc">Turn on or off notification button</string>
+    <string name="add_notification_desc">Add notification button</string>
+    <string name="search_line_desc">Search line box</string>
 </resources>

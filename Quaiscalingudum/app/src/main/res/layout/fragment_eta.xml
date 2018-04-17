@@ -37,7 +37,8 @@
             android:src="@android:drawable/ic_menu_my_calendar"
             app:layout_constraintBottom_toBottomOf="@id/time_tv"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/repeat_label_tv" />
+            app:layout_constraintTop_toTopOf="@id/repeat_label_tv"
+            android:contentDescription="@string/pick_date_desc" />
 
         <TableLayout
             android:id="@+id/tableLayout"
